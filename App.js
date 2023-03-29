@@ -16,8 +16,6 @@ export default function App() {
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
-        // const users = await DBAdapter.getAllUsers();
-        // console.log(users); //Current User is being read.....
         const currentUser = await DBAdapter.getCurrentUser();
         if (currentUser !== undefined) {
           setCurrentUser(currentUser);
@@ -36,7 +34,6 @@ export default function App() {
     else setLoginStatus(true);
 
     console.log("In app.js " + JSON.stringify(currentUser));
-    setCurrentUser(currentUser);
   };
 
   const handleLogout = (currentUser) => {
@@ -44,13 +41,6 @@ export default function App() {
   };
 
   const handleLogin = () => {
-    // const fetchCurrentUser = async () => {
-    //   const user = await DBAdapter.getCurrentUser();
-    //   if (user !== undefined) {
-    //     setCurrentUser(user);
-    //   }
-    // };
-    // fetchCurrentUser();
     if(loginStatus) setLoginStatus(false);
     else setLoginStatus(true);
   };

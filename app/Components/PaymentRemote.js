@@ -23,7 +23,7 @@ export default function PaymentRemote({
               <Text
                 style={{ color: colors.white, textAlign: "center", width: 80 }}
               >
-                Accept Payment
+                Accept
               </Text>
             </View>
           </TouchableOpacity>
@@ -36,7 +36,7 @@ export default function PaymentRemote({
               <Text
                 style={{ color: colors.white, textAlign: "center", width: 80 }}
               >
-                Give Credit
+                Credit
               </Text>
             </View>
           </TouchableOpacity>
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     display:"flex",
     width: "90%",
-    height: 150,
+    height: "20%",
     backgroundColor: colors.white,
     borderRadius: 30,
     elevation: 5,
@@ -79,8 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.red,
     flexDirection: "row",
     alignItems: "center",
-    height: 50,
-    padding: 10,
+    padding:10,
     borderTopLeftRadius: 25,
     borderBottomLeftRadius: 25,
     justifyContent: "center",
@@ -88,12 +87,12 @@ const styles = StyleSheet.create({
 
   seperatorContainer: {
     backgroundColor: colors.red,
-    height: 50,
+    height: 45,
     justifyContent: "center",
   },
 
   seperator: {
-    height: 35,
+    height: 30,
     width: 0.5,
     backgroundColor: colors.lightWhite,
   },
@@ -103,7 +102,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
-    height: 50,
     borderTopRightRadius: 25,
     borderBottomRightRadius: 25,
     justifyContent: "center",
