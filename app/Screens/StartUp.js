@@ -6,8 +6,14 @@ import AppButton from "../Components/AppButton.js";
 import loginBackground from "../assets/loginBackground.jpg";
 import logoIcon from "../assets/logo_white.png";
 import { colors } from "../config/colors.js";
+import verifyUser from "../../auth/firebaseAuth.js";
+
+
 
 export default function StartUp({ navigation }) {
+  verifyUser();
+
+
   const handleSignUpPress = () => {
     navigation.navigate("SignUp", { name: "SignUp" });
   };

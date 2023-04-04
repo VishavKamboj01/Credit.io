@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -13,6 +13,7 @@ import AddCustomerButton from "../Components/AddCustomerButton";
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator({ currentUser, onLogout, paymentMade }) {
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -49,7 +50,7 @@ export default function TabNavigator({ currentUser, onLogout, paymentMade }) {
       <Tab.Screen
         name="AddCustomer"
         children={(props) => (
-          <AddCustomer {...props} currentUser={currentUser} onAddCustomerClicked={() => console.log("Add Customer Clicked")}/>
+          <AddCustomer {...props} currentUser={currentUser}/>
         )}
         options={({ navigation }) => ({
           tabBarButton: () => (

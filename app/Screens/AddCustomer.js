@@ -23,12 +23,15 @@ export default function AddCustomer({ navigation, route, currentUser }) {
   };
 
   useEffect(() => {
+
     requestPermission();
     if (route.params?.contact) {
       const contact = route.params.contact;
       setFullName(contact.name);
       setPhoneNumber(contact.phoneNumbers[0].number);
     }
+
+
   }, [canAskAgain, route.params?.contact]);
 
   const showAlert = () => {
@@ -154,7 +157,9 @@ export default function AddCustomer({ navigation, route, currentUser }) {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
+    flex:1,
+    justifyContent:"center",
+    paddingBottom:50,
     backgroundColor: colors.white,
   },
 
