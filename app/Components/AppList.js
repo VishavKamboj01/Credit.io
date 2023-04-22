@@ -5,9 +5,10 @@ import { colors } from "../config/colors";
 import AppListItem from "./AppListItem";
 import AppListItemSeperator from "./AppListItemSeperator";
 
-export default function AppList({ items, onListItemPressed }) {
+export default function AppList({ items, onListItemPressed, onDeleteIconPress, onEditIconPress }) {
   return (
     <FlatList
+      inverted
       data={items}
       renderItem={({ item }) => {
         return (
@@ -20,10 +21,11 @@ export default function AppList({ items, onListItemPressed }) {
             onItemPressed={() => onListItemPressed(item)}
             imageUri={item.image_uri}
             uniqueValue={item.customer_id}
+            onDeleteIconPress={() => onDeleteIconPress(item)}
+            onEditIconPress={() => onEditIconPress(item)}
           />
         );
       }}
-      ItemSeparatorComponent={() => <AppListItemSeperator />}
       keyExtractor={(item, index) => String(index)}
     />
   );

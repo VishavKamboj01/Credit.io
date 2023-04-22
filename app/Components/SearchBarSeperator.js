@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   container: {
     width: 1,
     height: "70%",
-    backgroundColor: colors.platinum,
+    backgroundColor: colors.lightBlack,
     marginLeft: 5,
     marginRight: 5,
   },

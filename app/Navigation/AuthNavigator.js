@@ -1,5 +1,5 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
 
 import StartUp from "../Screens/StartUp";
 import Login from "../Screens/Login";
@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 
 export default function AuthNavigator({ onUserSignUp, onLogin }) {
   return (
-    <Stack.Navigator presentation="card">
+    <Stack.Navigator presentation="card" screenOptions={{...TransitionPresets.SlideFromRightIOS}}>
       <Stack.Screen
         options={{ headerShown: false }}
         name="StartUp"

@@ -13,7 +13,7 @@ function getPayments(customer_id, user_id) {
     db.transaction((tx) => {
       tx.executeSql(
         `SELECT * FROM payments
-        WHERE customer_id = ? AND user_id = ?`,
+        WHERE customer_id = ? AND user_id = ? AND deleted = "no"`,
         [customer_id, user_id],
         (txObj, success) => resolve(success.rows._array),
         (txObj, error) => reject(error)
@@ -27,7 +27,7 @@ function getAllPayments(user_id) {
     db.transaction((tx) => {
       tx.executeSql(
         `SELECT * FROM payments
-        WHERE user_id = ?`,
+        WHERE user_id = ? AND deleted = "no"`,
         [user_id],
         (txObj, success) => resolve(success.rows._array),
         (txObj, error) => reject(error)
@@ -38,14 +38,14 @@ function getAllPayments(user_id) {
 
 function createDatabaseSchema() {
   enableForeignKeySupport();
-  dropTable("users");
-  dropTable("payments");
-  dropTable("customers");
-  dropTable("recent_payments");
+  // dropTable("users");
+  // dropTable("payments");
+  // dropTable("customers");
+  // dropTable("recent_payments");
   createTableUsers();
   createTableCustomers();
   createTablePayments();
-  createTableRecentPayments();
+  // createTableRecentPayments();
 }
 
 function createTableUsers() {
@@ -55,16 +55,17 @@ function createTableUsers() {
       CREATE TABLE IF NOT EXISTS users
       (
           user_id 	INTEGER PRIMARY KEY AUTOINCREMENT,
-          full_name   VARCHAR(50)  NOT NULL,
-          user_name   VARCHAR(50)  NOT NULL,
+          user_name   VARCHAR(50),
+          email       VARCHAR(50)  NOT NULL,
           password    VARCHAR(255) NOT NULL,
-          email 	 	VARCHAR(255) NOT NULL,
-          status      VARCHAR(10)   NOT NULL DEFAULT "Logged In"
+          phone_number VARCHAR(50) NOT NULL,
+          country     VARCHAR(20)  NOT NULL,
+          status      VARCHAR(10)  NOT NULL DEFAULT "Logged In"
       );
       `,
       null,
       (txObj, resultSet) => console.log("success in creating users table"),
-      () => console.log("error in creating table")
+      () => console.log("error in creating users table")
     );
   });
 }
@@ -81,6 +82,8 @@ function createTableCustomers() {
         address 	    VARCHAR(255) NOT NULL,
         phone_number  VARCHAR(50)  NOT NULL,
         image_uri	    VARCHAR(255) NOT NULL,
+        deleted       VARCHAR(5)   DEFAULT "no",
+        deleted_date_time  TEXT,
         CONSTRAINT fk_users
           FOREIGN KEY (user_id)
           REFERENCES users (user_id)
@@ -101,6 +104,9 @@ function createTablePayments() {
       amount  	  	  	  DECIMAL(9,2)   NOT NULL,
       payment_date_time   TEXT 	   NOT NULL,
       payment_type	  	  VARCHAR(10)    NOT NULL,
+      payment_note        VARCHAR(200),
+      deleted       VARCHAR(3)   DEFAULT "no",
+      deleted_date_time  TEXT,
       customer_id 	  	  INTEGER 	   NOT NULL,
       user_id			  	    INTEGER 	   NOT NULL,
       CONSTRAINT fk_customers
@@ -125,10 +131,13 @@ function createTableRecentPayments() {
   (
       payment_id   	  	INTEGER PRIMARY KEY AUTOINCREMENT,
       amount  	  	  	DECIMAL(9,2)   NOT NULL,
-      payment_date_time   TEXT 	   NOT NULL,
+      payment_date_time   TEXT 	       NOT NULL,
       payment_type	  	VARCHAR(10)    NOT NULL,
-      customer_id 	  	INTEGER 	   NOT NULL,
-      user_id			  	INTEGER 	   NOT NULL,
+      payment_note      VARCHAR(200),
+      deleted       VARCHAR(3)   DEFAULT "no",
+      deleted_date_time  TEXT,
+      customer_id 	  	INTEGER 	     NOT NULL,
+      user_id			  	INTEGER 	       NOT NULL,
       FOREIGN KEY (customer_id)
           REFERENCES customers (customer_id)
           ON UPDATE CASCADE
@@ -154,9 +163,7 @@ function enableForeignKeySupport() {
 }
 
 function createCustomer(user, customer) {
-  const fetchUserId = async () => {
-    const userId = await getUserId(user.user_name);
-    if (userId === 0) return null;
+
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
@@ -164,7 +171,7 @@ function createCustomer(user, customer) {
           (user_id,full_name,address,phone_number,image_uri) 
           VALUES (?,?,?,?,?)`,
           [
-            userId,
+            user.user_id,
             customer.full_name,
             customer.address,
             customer.phone_number,
@@ -176,35 +183,28 @@ function createCustomer(user, customer) {
         );
       });
     });
-  };
-  return fetchUserId();
 }
 
 function getAllCustomers(user) {
-  const fetchUserId = async () => {
-    const userId = await getUserId(user.user_name);
-    if (userId === 0) return null;
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `SELECT * FROM customers
-          WHERE user_id = ?`,
-          [userId],
-          (txObj, success) => resolve(success.rows._array),
-          (txObj, error) => reject(error)
-        );
-      });
-    });
-  };
-  return fetchUserId();
-}
-
-function checkisUserExists(user_name) {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM users WHERE user_name = ?",
-        [user_name],
+        `SELECT * FROM customers
+        WHERE user_id = ? AND deleted = "no"`,
+        [user.user_id],
+        (txObj, success) => resolve(success.rows._array),
+        (txObj, error) => reject(error)
+      );
+    });
+  });
+}
+
+function checkisUserExists(phone_number) {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM users WHERE phone_number = ?",
+        [phone_number],
         (txObj, success) => {
           if (success.rows._array.length !== 0) resolve({ userExists: true });
           else resolve({ userExists: false });
@@ -216,14 +216,11 @@ function checkisUserExists(user_name) {
 }
 
 function isUserExists(user) {
-  const userNameOrEmail = user.user_name.includes("@") ? "email" : "user_name";
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM users WHERE " +
-          userNameOrEmail +
-          " = ? AND password = ?",
-        [user.user_name, user.password],
+        "SELECT * FROM users WHERE phone_number = ? AND password = ?",
+        [user.phone_number, user.password],
         (txObj, success) => {
           if (success.rows._array.length !== 0) {
             resolve({
@@ -238,6 +235,7 @@ function isUserExists(user) {
     });
   });
 }
+
 
 function loginUser(user) {
   const check = async () => {
@@ -318,8 +316,8 @@ function addUser(user) {
   db.transaction(
     (tx) => {
       tx.executeSql(
-        "INSERT INTO users (full_name,user_name,password,email) VALUES (?,?,?,?)",
-        [user.full_name, user.user_name, user.password, user.email],
+        "INSERT INTO users (user_name,email,password,phone_number,country) VALUES (?,?,?,?,?)",
+        ["", user.email, user.password, user.phone_number, user.country],
         (txObj, result) => console.log("Successful" + result),
         (txObj, result) => console.log("Error" + result)
       );
@@ -351,25 +349,25 @@ function addPayment(payment) {
         db.transaction(
           (tx) => {
             tx.executeSql(
-              "INSERT INTO payments (amount, payment_date_time, payment_type, customer_id, user_id) VALUES (?,?,?,?,?)",
-              [payment.amount, payment.payment_date_time.toString(), payment.payment_type, payment.customer_id, payment.user_id],
+              "INSERT INTO payments (amount, payment_date_time, payment_type, payment_note, customer_id, user_id) VALUES (?,?,?,?,?,?)",
+              [payment.amount, payment.payment_date_time.toString(), payment.payment_type, payment.payment_note, payment.customer_id, payment.user_id],
               (txObj, result) => console.log("Successful" + result),
               (txObj, result) => console.log("Error" + result)
             );
 
-            tx.executeSql(
-              "DELETE FROM recent_payments WHERE customer_id=? AND user_id=?",
-              [payment.customer_id, payment.user_id],
-              (txObj, result) => console.log("Successful" + result),
-              (txObj, result) => console.log("Error" + result)
-            );
+            // tx.executeSql(
+            //   "DELETE FROM recent_payments WHERE customer_id=? AND user_id=?",
+            //   [payment.customer_id, payment.user_id],
+            //   (txObj, result) => console.log("Successful" + result),
+            //   (txObj, result) => console.log("Error" + result)
+            // );
 
-            tx.executeSql(
-              "INSERT INTO recent_payments (amount, payment_date_time, payment_type, customer_id, user_id) VALUES (?,?,?,?,?)",
-              [payment.amount, payment.payment_date_time.toString(), payment.payment_type, payment.customer_id, payment.user_id],
-              (txObj, result) => console.log("Successful" + result),
-              (txObj, result) => console.log("Error" + result)
-            );
+            // tx.executeSql(
+            //   "INSERT INTO recent_payments (amount, payment_date_time, payment_type, payment_note, customer_id, user_id) VALUES (?,?,?,?,?,?)",
+            //   [payment.amount, payment.payment_date_time.toString(), payment.payment_type, payment.payment_note, payment.customer_id, payment.user_id],
+            //   (txObj, result) => console.log("Successful" + result),
+            //   (txObj, result) => console.log("Error" + result)
+            // );
 
           },
           (err) => reject(err),
@@ -378,14 +376,104 @@ function addPayment(payment) {
     });
   };
 
-  function getRecentPayments(user_id) {
-    console.log("User id ",user_id);
+  function getRecentPayments (user_id) {
+   
+    return new Promise(async(resolve, reject) => {
+      const payments = await getAllPayments(user_id);
+      const recentPayments = [];
+      for(let payment of payments){
+          recentPayments[payment.customer_id] = {...payment};
+      }
+
+      resolve(recentPayments);
+      // db.transaction(
+      //   (tx) => {
+      //     tx.executeSql(
+      //       "SELECT * FROM recent_payments WHERE user_id=? AND deleted = 'no'",
+      //       [user_id],
+      //       (txObj, result) => resolve(result.rows._array),
+      //       (txObj, result) => reject(result)
+      //     )
+      //   }
+      // )
+    });
+  }
+
+  function deleteCustomer(customer){
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            "SELECT * FROM recent_payments WHERE user_id=?",
-            [user_id],
+            `UPDATE customers SET deleted = "yes", deleted_date_time = ? WHERE customer_id=?;`,
+            [customer.deleted_date_time, customer.customer_id],
+            (txObj, result) => resolve(result.rows._array),
+            (txObj, result) => reject(result)
+          )
+
+          tx.executeSql(
+            `UPDATE payments SET deleted = 'yes', deleted_date_time = ? WHERE customer_id = ?;`,
+            [customer.deleted_date_time, customer.customer_id],
+            (txObj, result) => resolve(result.rows._array),
+            (txObj, result) => reject(result)
+          )
+        }
+      )
+    });
+  }
+
+  //ALSO NEED TO RESTORE THE PAYMENTS FOR THE CUSTOMERS
+  function restoreCustomers(){
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            `UPDATE customers SET deleted = "no", deleted_date_time = "" WHERE deleted = "yes";`,
+            [],
+            (txObj, result) => resolve(result.rows._array),
+            (txObj, result) => reject(result)
+          )
+        }
+      )
+    });
+  }
+
+  function deletePayment(payment){
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            `UPDATE payments SET deleted = 'yes', deleted_date_time = ? WHERE payment_id = ?;`,
+            [payment.deleted_date_time, payment.payment_id],
+            (txObj, result) => resolve(result.rows._array),
+            (txObj, result) => reject(result)
+          )
+        }
+      )
+    });
+  }
+
+  function restorePayments(){
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            `UPDATE payments SET deleted = 'no', deleted_date_time = '' WHERE deleted = 'yes'`,
+            [],
+            (txObj, result) => resolve(result.rows._array),
+            (txObj, result) => reject(result)
+          )
+        }
+      )
+    });
+  }
+
+  function updateCustomer(customer) {
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            `UPDATE customers SET full_name=?, phone_number=?, address=?, image_uri=? WHERE customer_id=?`,
+            [customer.full_name, customer.phone_number, customer.address, customer.image_uri, customer.customer_id],
             (txObj, result) => resolve(result.rows._array),
             (txObj, result) => reject(result)
           )
@@ -411,4 +499,9 @@ export default {
   logoutUser,
   loginUser,
   addPayment,
+  deleteCustomer,
+  deletePayment,
+  restoreCustomers,
+  restorePayments,
+  updateCustomer,
 };

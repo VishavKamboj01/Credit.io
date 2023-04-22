@@ -27,24 +27,22 @@ export default function AppComponent({
   return (
     <View style={styles.container}>
       <AppToolbar
-        style={styles.toolbar}
         logo={logo}
         title={title}
         menuItems={toolbarMenuItems}
         onMenuItemPressed={onToolbarMenuItemPress}
         onSearchIconPress={handleSearchIconPress}
       />
-      {isSearchIconPressed ? (
+      {isSearchIconPressed && 
         <Searchbar
           onMenuItemPressed={onSearchbarMenuItemPress}
           onSearchTextChange={onSearchbarTextChange}
           selectedMenuItem={selectedSearchbarMenuItem}
           menuItems={searchBarMenuItems}
           placeholder={searchbarPlaceholder}
-        />
-      ) : (
-        <></>
-      )}
+    
+      />
+      }
 
       {children}
     </View>
@@ -54,9 +52,8 @@ export default function AppComponent({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:colors.appBackground,
+    alignItems:"center"
   },
 
-  toolbar: {
-    backgroundColor: colors.primary,
-  },
 });

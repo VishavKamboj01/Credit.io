@@ -4,14 +4,14 @@ import { StyleSheet, ImageBackground, View, Image, Text } from "react-native";
 import AppButton from "../Components/AppButton.js";
 
 import loginBackground from "../assets/loginBackground.jpg";
+import grid from "../assets/images/grid1.png";
 import logoIcon from "../assets/logo_white.png";
 import { colors } from "../config/colors.js";
-import verifyUser from "../../auth/firebaseAuth.js";
+import {verifyUser} from "../auth/firebaseAuth.js";
 
-
+import credit from "../assets/images/credit.png";
 
 export default function StartUp({ navigation }) {
-  verifyUser();
 
 
   const handleSignUpPress = () => {
@@ -23,88 +23,86 @@ export default function StartUp({ navigation }) {
   };
 
   return (
-    <ImageBackground style={styles.background} source={loginBackground}>
-      <View style={styles.backgroundColor}>
-        <View style={styles.content}>
-          <Image source={logoIcon} style={styles.logo} />
-          <Text style={styles.title}>Credit.IO</Text>
-          <Text style={styles.subTitle}>
-            Manage your credit details like a pro
-          </Text>
-          <View style={styles.buttonContainer}>
-            <AppButton
-              style={styles.signUpButton}
-              title="Sign Up"
-              onPress={handleSignUpPress}
-            ></AppButton>
-            <AppButton
-              style={styles.loginButton}
-              title="Login"
-              textColor={colors.red}
-              onPress={handleLoginPress}
-            ></AppButton>
-          </View>
+    <ImageBackground style={styles.background} source={grid}>
+      <View style={styles.container}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Manage</Text>
+          <Text style={styles.title}>your</Text>
+          <Text style={styles.title}>finances</Text>
+          <Text style={[styles.title,{color:colors.green}]}>simply</Text>
+          <Text style={styles.subtitle}>From easy money management, to flawlesly calculating interest.</Text>
+          
+        </View>
+        <View style={styles.buttonContainer}>
+          <AppButton
+            style={styles.signUpButton}
+            title="Sign Up"
+            onPress={handleSignUpPress}
+            textColor={colors.white}
+          ></AppButton>
+          <AppButton
+            style={styles.loginButton}
+            title="Login"
+            textColor={colors.white}
+            onPress={handleLoginPress}
+          ></AppButton>
         </View>
       </View>
+    
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    width: "100%",
-    height: "100%",
+    flex:1,
+    resizeMode:"contain",
   },
 
-  backgroundColor: {
-    flex: 1,
-    backgroundColor: "rgba(231, 76, 60,0.8)",
-    justifyContent: "center",
-    alignItems: "center",
+  container:{
+    flex:1,
+    backgroundColor:"rgba(0,0,0,0.4)"
   },
 
-  content: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
+  titleContainer:{
+    flex:1,
+    marginTop:70,
+    marginLeft:25
   },
 
-  logo: {
-    width: 80,
-    height: 80,
-    marginBottom: 5,
+  title:{
+    fontSize:55,
+    color:colors.white,
+    fontFamily:"Poppins-Medium",
+    lineHeight:65,
   },
 
-  title: {
-    color: "white",
-    fontSize: 28,
-    marginBottom: 10,
-  },
-
-  subTitle: {
-    color: colors.lightWhite,
-    fontSize: 16,
-    marginBottom: 100,
+  subtitle:{
+    color:colors.silver,
+    fontSize:15,
+    fontFamily:"Poppins-Medium",
+    width:"80%",
+    marginTop:30
   },
 
   buttonContainer: {
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
+    height:"20%",
+    bottom:30
   },
 
   loginButton: {
-    backgroundColor: "white",
+    backgroundColor: colors.green,
     width: "80%",
-    fontWeight: "bold",
   },
 
   signUpButton: {
     backgroundColor: "transparent",
     borderWidth: 2,
-    borderColor: "white",
+    borderColor: colors.white,
     borderStyle: "solid",
     width: "80%",
-    fontWeight: "bold",
   },
 });

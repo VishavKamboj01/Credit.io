@@ -9,6 +9,7 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 
 import { colors } from "../config/colors";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function AppContextMenu({
   menuItems,
@@ -17,7 +18,7 @@ export default function AppContextMenu({
   selectedMenuItem,
 }) {
   return (
-    <View>
+    <View >
       {menuItems ? (
         <Menu>
           <MenuTrigger>

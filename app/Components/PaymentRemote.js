@@ -1,8 +1,10 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Feather, AntDesign } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 import { colors } from "../config/colors";
+import AppText from "./AppText";
 
 export default function PaymentRemote({
   onAcceptPaymentPress,
@@ -10,21 +12,24 @@ export default function PaymentRemote({
   onCallIconPress,
   onMessageIconPress,
 }) {
+  //["#948cb7","#c7a8ca"]
   return (
-      <View style={styles.bottomContainer}>
+      <LinearGradient
+        colors={["#434343","rgba(0,0,0,0.8)"]} 
+        start={{x: 0, y: 0.75}} end={{x: 1, y: 0.25}}
+        style={styles.bottomContainer}>
         <View style={styles.buttonsContainer}>
           <TouchableOpacity onPress={onAcceptPaymentPress}>
             <View style={styles.acceptPaymentButton}>
               <Feather
                 name="arrow-down-circle"
                 size={24}
-                color={colors.white}
+                color={colors.black}
               />
-              <Text
-                style={{ color: colors.white, textAlign: "center", width: 80 }}
-              >
-                Accept
-              </Text>
+              <AppText
+                title="Accept"
+                style={{ color: colors.black, textAlign: "center", width: 80 }}
+              />
             </View>
           </TouchableOpacity>
           <View style={styles.seperatorContainer}>
@@ -32,51 +37,49 @@ export default function PaymentRemote({
           </View>
           <TouchableOpacity onPress={onGiveCreditPress}>
             <View style={styles.giveCreditButton}>
-              <Feather name="arrow-up-circle" size={24} color={colors.white} />
-              <Text
-                style={{ color: colors.white, textAlign: "center", width: 80 }}
-              >
-                Credit
-              </Text>
+              <Feather name="arrow-up-circle" size={24} color={colors.black} />
+              <AppText
+                title="Credit"
+                style={{ color: colors.black, textAlign: "center", width: 80 }}
+              />
+              
             </View>
           </TouchableOpacity>
         </View>
         <View style={styles.secondButtonsContainer}>
           <View style={styles.callButton}>
-            <Feather name="phone-call" size={24} color={colors.secondary} />
+            <Feather name="phone-call" size={24} color={colors.black} />
           </View>
           <View style={styles.messageButton}>
-            <AntDesign name="message1" size={24} color={colors.secondary} />
+            <AntDesign name="message1" size={24} color={colors.black} />
           </View>
         </View>
-      </View>
+      </LinearGradient>
    
   );
 }
 
 const styles = StyleSheet.create({
   bottomContainer: {
-    display:"flex",
     width: "90%",
-    height: "20%",
     backgroundColor: colors.white,
     borderRadius: 30,
-    elevation: 5,
     alignItems: "center",
     alignSelf: "center",
     justifyContent: "space-between",
     overflow: "hidden",
     bottom:10,
-    marginTop: 20
+    marginTop: 10,
   },
 
   buttonsContainer: {
     flexDirection: "row",
     marginTop: 25,
+    paddingBottom:40
   },
 
   acceptPaymentButton: {
-    backgroundColor: colors.red,
+    backgroundColor: "#dbcae2",
     flexDirection: "row",
     alignItems: "center",
     padding:10,
@@ -86,7 +89,7 @@ const styles = StyleSheet.create({
   },
 
   seperatorContainer: {
-    backgroundColor: colors.red,
+    backgroundColor: "#dbcae2",
     height: 45,
     justifyContent: "center",
   },
@@ -94,11 +97,11 @@ const styles = StyleSheet.create({
   seperator: {
     height: 30,
     width: 0.5,
-    backgroundColor: colors.lightWhite,
+    backgroundColor: colors.iconColor,
   },
 
   giveCreditButton: {
-    backgroundColor: colors.red,
+    backgroundColor: "#dbcae2",
     flexDirection: "row",
     alignItems: "center",
     padding: 10,
@@ -116,7 +119,7 @@ const styles = StyleSheet.create({
   callButton: {
     width: 55,
     height: 55,
-    backgroundColor: colors.white,
+    backgroundColor: "#dbcae2",
     borderRadius: 30,
     left: 10,
     bottom: 10,
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
   messageButton: {
     width: 55,
     height: 55,
-    backgroundColor: colors.white,
+    backgroundColor: "#dbcae2",
     borderRadius: 30,
     right: 10,
     bottom: 10,

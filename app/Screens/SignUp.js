@@ -1,154 +1,143 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import {
   StyleSheet,
   ImageBackground,
   View,
-  Image,
   ScrollView,
 } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
 import AppInputField from "../Components/AppInputField";
-import AppButton from "../Components/AppButton";
 import DBAdapter from "../Database/DatabaseAdapter";
-import loginBackground from "../assets/loginBackground.jpg";
-import logoIcon from "../assets/logo_red.png";
 import { colors } from "../config/colors";
+import grid from "../assets/images/grid1.png";
+import SignupHeader from "../Components/SignupHeader";
+import SignupPhoneCard from "../Components/SignupPhoneCard";
+import GradientButton from "../Components/GradientButton";
 
 const validationSchema = Yup.object().shape({
-  full_name: Yup.string().required().min(5).max(50).label("FullName"),
-  user_name: Yup.string().required().max(50).label("Username"),
   email: Yup.string().required().max(255).email().label("Email"),
   password: Yup.string().required().min(6).label("Password"),
-  confirmPassword: Yup.string()
-    .required()
-    .oneOf(
-      [Yup.ref("password"), null],
-      "Confirm Password must match with Password feild"
-    )
-    .label("Confirm Password"),
 });
 
 export default function SignUp({ navigation, onUserSignUp }) {
-  const handleSubmit = (values) => {
-    //Save Details in the database and login the user
-    const checkIfUserExists = async () => {
-      try {
-        const { userExists } = await DBAdapter.checkIsUserExists(
-          values.user_name
-        );
 
-        if (!userExists) {
-          DBAdapter.addUser(values);
-          onUserSignUp(values);
-        } else
-          alert(
-            "User with same Username already exists. Change your Username and try again."
-          );
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    checkIfUserExists();
+  const [isPhoneVerified, setPhoneVerified] = useState(true);
+  const [verifiedPhone, setVerifiedPhone] = useState("");
+  const [verifiedCountry, setVerifiedCountry] = useState("");
+
+
+  const handleFormSubmit = (values) => {
+    //Save Details in the database and login the user
+    if(isPhoneVerified){ //Not verified -> Opposite Condition
+      setPhoneVerified(false);
+      console.log("NOT VERIFIED");
+      return;
+    } 
+    
+     addUser(values);
   };
 
+  const addUser = async(values) => {
+    try{
+      const { userExists } = await DBAdapter.checkIsUserExists(values.email);
+      if(userExists){
+         alert(
+          "User with same Email already exists. Change your Email and try again."
+        );
+        return;
+      }
+
+      values.phone_number = verifiedPhone;
+      values.country = verifiedCountry;
+      DBAdapter.addUser(values);
+      onUserSignUp(values);
+    }catch(error){
+      console.log("ERROR IN SIGN UP ", error);
+    }
+  }
+
+  const handleBackPress = () => {
+    navigation.navigate("StartUp");
+  }
+
+
+  const handleOnVerificationSuccess = (phoneNumber, country) => {
+    setPhoneVerified(false);
+    setVerifiedPhone(phoneNumber);
+    setVerifiedCountry(country);
+  }
+
   return (
-    <ImageBackground style={styles.background} source={loginBackground}>
-      <View style={styles.backgroundColor}>
-        <ScrollView>
-          <View style={styles.container}>
-            <Image source={logoIcon} style={styles.logo} />
+    <ImageBackground source={grid} style={styles.background}>
+        <SignupHeader onBackPress={handleBackPress} title="Sign up"/>
+        <ScrollView style={styles.scrollView}>
             <Formik
               initialValues={{
-                full_name: "",
-                user_name: "",
                 email: "",
                 password: "",
-                confirmPassword: "",
               }}
-              onSubmit={handleSubmit}
+              onSubmit={(values) => handleFormSubmit(values)}
               validationSchema={validationSchema}
             >
-              {({ handleChange, handleSubmit, errors }) => (
-                <>
+              {({ handleChange, handleSubmit, errors, setFieldTouched, touched }) => (
+                <View style={styles.formContainer}>
                   <AppInputField
-                    icon="account"
-                    placeholder="Full Name *"
-                    onChangeText={handleChange("full_name")}
-                    error={errors.full_name}
-                  />
-                  <AppInputField
-                    icon="account-circle"
-                    placeholder="Username *"
-                    onChangeText={handleChange("user_name")}
-                    error={errors.user_name}
-                  />
-                  <AppInputField
+                    title="Email"
                     icon="email"
-                    placeholder="Email Address *"
+                    placeholder="tim@credit.io.com"
                     onChangeText={handleChange("email")}
                     error={errors.email}
+                    onBlur={() => setFieldTouched("email")}
+                    isTouched={touched.email}
                   />
+                
+                  <SignupPhoneCard 
+                    onVerificationSuccess={handleOnVerificationSuccess}
+                    isPhoneVerified={isPhoneVerified}/>
+                  
                   <AppInputField
+                    title="Password"
                     icon="lock"
-                    placeholder="Password *"
+                    placeholder="Pick a Strong Password"
                     onChangeText={handleChange("password")}
                     secureTextEntry={true}
                     error={errors.password}
+                    onBlur={() => setFieldTouched("password")}
+                    isTouched={touched.password}
                   />
-                  <AppInputField
-                    icon="lock"
-                    placeholder="Confirm Password *"
-                    onChangeText={handleChange("confirmPassword")}
-                    secureTextEntry={true}
-                    error={errors.confirmPassword}
-                  />
-                  <AppButton
-                    style={styles.signUpButton}
-                    color={colors.red}
-                    title="Sign Up"
+                  
+                  <GradientButton 
+                    colorsArray={["#ddffbb","#afc170"]} 
+                    title="SIGN UP"
                     onPress={handleSubmit}
                   />
-                </>
+
+                </View>
               )}
             </Formik>
-          </View>
         </ScrollView>
-      </View>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    width: "100%",
-    height: "100%",
+    flex:1,
     justifyContent: "center",
+    alignItems:"center",
+  },
+  
+  scrollView: {
+    flex:1,
+    backgroundColor:"rgba(0,0,0,0.4)",
+    width:"100%"
   },
 
-  backgroundColor: {
-    height: "100%",
-    backgroundColor: "rgba(255, 255, 255,0.8)",
-  },
-
-  container: {
-    width: "100%",
-    height: "120%",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  logo: {
-    width: 80,
-    height: 80,
-    marginBottom: 60,
-  },
-
-  signUpButton: {
-    width: "85%",
-    marginTop: 40,
-    elevation: 10,
-    marginBottom: "50%",
+  formContainer: {
+    flex:1,
+    alignItems:"center",
+    justifyContent:'center',
   },
 });

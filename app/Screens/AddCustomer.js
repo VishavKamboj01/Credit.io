@@ -8,52 +8,59 @@ import AppInputField from "../Components/AppInputField";
 import AppButton from "../Components/AppButton";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import DBAdapter from "../Database/DatabaseAdapter";
+import BackButtonInApp from "../Components/BackButtonInApp";
 
-export default function AddCustomer({ navigation, route, currentUser }) {
-  const [canAskAgain, setCanAskAgain] = useState(false);
+export default function AddCustomer({ navigation, route, currentUser, additional }) {
   const [imageUri, setImageUri] = useState("");
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
+
   const [id, setId] = useState(17);
 
   const requestPermission = async () => {
     const { granted } = await ImagePicker.requestCameraPermissionsAsync();
     if (!granted) showAlert();
+    return granted;
   };
 
   useEffect(() => {
-
-    requestPermission();
-    if (route.params?.contact) {
-      const contact = route.params.contact;
+    emptyInputFields();
+    
+    if (additional.route.params?.contact) {
+      const contact = additional.route.params.contact;
       setFullName(contact.name);
       setPhoneNumber(contact.phoneNumbers[0].number);
     }
 
+    if(additional.route.params?.editCustomer){
+      const customer = additional.route.params.editCustomer;
+      setFullName(customer.full_name);
+      setPhoneNumber(customer.phone_number);
+      setAddress(customer.address);
+      setImageUri(customer.image_uri);
+    }
 
-  }, [canAskAgain, route.params?.contact]);
+
+  }, [additional.route.params?.contact, additional.route.params?.editCustomer]);
 
   const showAlert = () => {
     Alert.alert(
       "Permission Denied",
-      "This action needs to access your gallery. Would you like to give us your permission?",
+      "You need to enable camera permissions for this feature.",
       [
         {
-          text: "No",
+          text: "Ok",
           style: "cancel",
         },
-        { text: "Yes", onPress: handleYesPress },
       ]
     );
   };
 
-  const handleYesPress = () => {
-    setCanAskAgain(true);
-  };
 
-  const handleAddImagePress = () => {
-    pickImage();
+  const handleAddImagePress = async() => {
+    const granted = await requestPermission();
+    if(granted) pickImage();
   };
 
   const pickImage = async () => {
@@ -103,8 +110,22 @@ export default function AddCustomer({ navigation, route, currentUser }) {
     setImageUri("");
   };
 
+  const handleUpdateCustomerPress = async() => {
+    const arg = {
+      full_name: fullName,
+      phone_number: phoneNumber,
+      address : address,
+      image_uri : imageUri,
+      customer_id: additional.route.params.editCustomer.customer_id
+    };
+
+    await DBAdapter.updateCustomer(arg);
+    navigation.navigate("Home");
+  }
+
   return (
     <ScrollView style={styles.container}>
+      <BackButtonInApp onPress={() => navigation.navigate("Contacts")}/>
       <View style={styles.dataInputsContainer}>
         <TouchableWithoutFeedback onPress={handleAddImagePress}>
           <View style={styles.imageInput}>
@@ -113,7 +134,7 @@ export default function AddCustomer({ navigation, route, currentUser }) {
                 <Text style={styles.addImage}>Add Image</Text>
                 <MaterialCommunityIcons
                   name="plus"
-                  color={colors.darkSilver}
+                  color={colors.iconColor}
                   size={40}
                 />
               </View>
@@ -126,18 +147,21 @@ export default function AddCustomer({ navigation, route, currentUser }) {
           </View>
         </TouchableWithoutFeedback>
         <AppInputField
+          inputFieldStyle={{backgroundColor:colors.appToolbar,marginLeft:0}}
           placeholder="Full Name"
           value={fullName}
           onChangeText={(text) => setFullName(text)}
         />
 
         <AppInputField
+          inputFieldStyle={{backgroundColor:colors.appToolbar,marginLeft:0}}
           placeholder="Phone Number"
           value={phoneNumber}
           onChangeText={(text) => setPhoneNumber(text)}
           keyboardType="number-pad"
         />
         <AppInputField
+          inputFieldStyle={{backgroundColor:colors.appToolbar, marginLeft:0}}
           placeholder="Address"
           value={address}
           numberOfLines={4}
@@ -147,8 +171,9 @@ export default function AddCustomer({ navigation, route, currentUser }) {
         />
         <AppButton
           style={styles.addCustomerButton}
-          title="Add Customer"
-          onPress={handleAddCustomerPress}
+          title={additional.route.params?.editCustomer ? "UPDATE CUSTOMER" : "ADD CUSTOMER"}
+          onPress={additional.route.params?.editCustomer ? handleUpdateCustomerPress : handleAddCustomerPress}
+          textStyle={{ fontFamily:"Open-Sans-Bold" }}
         />
       </View>
     </ScrollView>
@@ -158,9 +183,9 @@ export default function AddCustomer({ navigation, route, currentUser }) {
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    justifyContent:"center",
+    // justifyContent:"center",
     paddingBottom:50,
-    backgroundColor: colors.white,
+    backgroundColor: colors.appBackground,
   },
 
   dataInputsContainer: {
@@ -173,23 +198,21 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: colors.platinum,
+    backgroundColor: colors.appToolbar,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 40,
   },
 
   addImage: {
-    color: colors.darkSilver,
+    color: colors.iconColor,
   },
 
   addCustomerButton: {
-    backgroundColor: colors.secondaryShade,
+    backgroundColor: colors.purple,
     width: "85%",
     marginTop: 20,
-    borderWidth: 5,
-    borderColor: colors.white,
-    elevation: 10,
     marginBottom: 30,
+    elevation:1,
   },
 });

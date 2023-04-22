@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import React from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 
 import { colors } from "../config/colors";
@@ -15,15 +15,12 @@ export default function AddCustomerButton({ onPress }) {
 
 const styles = StyleSheet.create({
   addCustomerButton: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.purple,
     width: 70,
     height: 70,
-    borderColor: colors.black,
     borderRadius: 40,
-    borderWidth: 5,
     justifyContent: "center",
-    bottom: 24,
+    bottom: 28,
     alignItems: "center",
-    elevation: 20,
   },
 });

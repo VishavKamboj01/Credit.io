@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, ToastAndroid } from "react-native";
 
 import AppList from "../Components/AppList";
-import Menus from "../Components/AppMenus";
+import {searchBarMenuItemsHome, toolbarMenuItemsHome} from "../Components/AppMenus";
 import { colors } from "../config/colors";
 import AppComponent from "../Components/AppComponent";
 import DBAdapter from "../Database/DatabaseAdapter";
@@ -26,22 +26,25 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
 
   const [customers, setCustomers] = useState([]);
   const [allCustomers, setAllCustomers] = useState([]);
+  const [customerDeleted, setCustomerDeleted] = useState(0);
 
   useEffect(() => {
     //Get Customer from the database...
     const fetchCustomers = async () => {
       try {
+        console.log("CURRENT USER ", currentUser);
         const customers = await DBAdapter.getAllCustomers(currentUser);
-        
         const payments = await DBAdapter.getAllPayments(currentUser.user_id);
 
         const recentPayments = await DBAdapter.getRecentPayments(currentUser.user_id);
+       
         const customersTemp = [...customers];
         for(let customer of customersTemp){
 
           const paymentSum = getPaymentsSum(payments, customer);
 
           for(let recent of recentPayments){
+            if(recent === undefined) continue;
             if(recent.customer_id === customer.customer_id && recent.user_id === customer.user_id){
               customer.recentActivity = recent.amount;
               customer.paymentType = recent.payment_type;
@@ -62,7 +65,8 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
     fetchCustomers();
 
     return () => {};
-  }, [currentUser, route.params, paymentMade]);
+  }, [route.params, paymentMade, customerDeleted]);
+  
 
   const getPaymentsSum = (payments, customer) => {
     return payments
@@ -75,7 +79,7 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
   }
 
   const handleListItemPressed = (item) => {
-    navigation.navigate("CustomerTransactions", {
+    navigation.navigate("CustomerTransactionsNav", {
       user_id: currentUser.user_id,
       customer_id: item.customer_id,
       name: item.full_name,
@@ -123,16 +127,38 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
     }
   };
 
+  const handleDeleteIconPress = async(item) => {
+    const customer = {
+      customer_id: item.customer_id,
+      deleted_date_time: new Date().toString()
+    }
+    
+    try{
+        const result = await DBAdapter.deleteCustomer(customer);
+        setCustomerDeleted(customerDeleted+1);
+        ToastAndroid.show(
+            "Customer Removed!. You can restore it within 30 days from your Account.",
+             ToastAndroid.LONG);
+
+      }catch(err){
+        console.log("ERROR in HOME CUSTOMER DELETION: ",err);
+      }
+  }
+
+  const handleEditIconPress = (item) => {
+    navigation.navigate("AddCustomer", {editCustomer: item});
+  }
+
 
   return (
     <AppComponent
       title="Home"
       searchbarPlaceholder="Search Customers"
-      searchBarMenuItems={Menus.searchBarMenuItemsHome}
+      searchBarMenuItems={searchBarMenuItemsHome}
       selectedSearchbarMenuItem={selectedSearchbarMenuItem}
       onSearchbarMenuItemPress={handleSearchBarMenuItemPress}
       onSearchbarTextChange={handleSearchTextChange}
-      toolbarMenuItems={Menus.toolbarMenuItemsHome}
+      toolbarMenuItems={toolbarMenuItemsHome}
       onToolbarMenuItemPress={handleToolbarMenuItemPress}
     >
       <View style={styles.container}>
@@ -141,6 +167,8 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
           <AppList
             items={customers}
             onListItemPressed={handleListItemPressed}
+            onDeleteIconPress={handleDeleteIconPress}
+            onEditIconPress={handleEditIconPress}
           />
         ) : (
           <View
@@ -158,7 +186,9 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    backgroundColor:colors.appBackground,
+    width:"100%",
+    heigth:"100%",
   },
 
   toolbar: {

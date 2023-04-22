@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { StyleSheet } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import Home from "../Screens/Home";
-import Contacts from "../Screens/Contacts";
+import AllTransactions from "../Screens/AllTransactions";
 import AddCustomer from "../Screens/AddCustomer";
 import { colors } from "../config/colors";
 import AddCustomerButton from "../Components/AddCustomerButton";
+import AddCustomerNav from "./AddCustomerNav";
 
 const Tab = createBottomTabNavigator();
 
@@ -17,10 +18,14 @@ export default function TabNavigator({ currentUser, onLogout, paymentMade }) {
   return (
     <Tab.Navigator
       screenOptions={{
-        "tabBarActiveTintColor": "#FF8A65",
+        "tabBarActiveTintColor": colors.white,
         "tabBarStyle": [
           {
-            "display": "flex"
+            display: "flex",
+            backgroundColor : colors.appToolbar,
+            paddingBottom:5,
+            paddingTop:5
+
           },
           null
         ],
@@ -34,7 +39,7 @@ export default function TabNavigator({ currentUser, onLogout, paymentMade }) {
         )}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <MaterialCommunityIcons name="home" color={color} size={20} />
           ),
         }}
         initialParams={{
@@ -48,26 +53,27 @@ export default function TabNavigator({ currentUser, onLogout, paymentMade }) {
       />
 
       <Tab.Screen
-        name="AddCustomer"
+        name="AddCustomerNav"
         children={(props) => (
-          <AddCustomer {...props} currentUser={currentUser}/>
+          <AddCustomerNav {...props} currentUser={currentUser}/>
         )}
         options={({ navigation }) => ({
           tabBarButton: () => (
             <AddCustomerButton
-              onPress={() => navigation.navigate("AddCustomer")}
+              onPress={() => navigation.navigate("Contacts")}
             />
           ),
         })}
       />
+      
 
       <Tab.Screen
-        name="Contacts"
-        component={Contacts}
+        name="AllTransactions"
+        component={AllTransactions}
         options={{
-          tabBarLabel: "Contacts",
+          tabBarLabel: "Transactions",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="contacts" color={color} size={size} />
+            <MaterialIcons name="import-export" color={color} size={25} />
           ),
         }}
       />

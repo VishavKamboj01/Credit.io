@@ -56,8 +56,8 @@ function createTableUsersQuery() {
   CREATE TABLE IF NOT EXISTS users
   (
       user_id 	  INTEGER PRIMARY KEY AUTOINCREMENT,
-      full_name   TEXT  NOT NULL,
-      user_name   TEXT  NOT NULL,
+      user_name   TEXT  ,
+      email       TEXT  NOT NULL,
       password    TEXT  NOT NULL,
       email 	 	  TEXT  NOT NULL,
       status      TEXT  NOT NULL DEFAULT "Logged In"

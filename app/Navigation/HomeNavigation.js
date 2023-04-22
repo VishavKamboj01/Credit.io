@@ -7,6 +7,7 @@ import MyAccount from "../Screens/MyAccount";
 import TabNavigator from "./TabNavigator";
 import { colors } from "../config/colors";
 import CustomerScreenHeader from "../Components/CustomerScreenHeader";
+import CustomerTransactionNav from "./CustomerTransactionNav";
 
 const Stack = createStackNavigator();
 
@@ -33,21 +34,11 @@ export default function HomeNavigation({currentUser, onLogout }) {
         )}
       </Stack.Screen>
       <Stack.Screen
-        options={({ route }) => ({
-          headerTitle: () => (
-            <CustomerScreenHeader
-              name={route.params.name}
-              imageUri={route.params.image}
-              totalDueOrAdvance={totalDueOrAdvance}
-            />
-          ),
-          headerStyle: { backgroundColor: colors.red },
-          headerTintColor: colors.white,
-        })}
-        name="CustomerTransactions"
+        name="CustomerTransactionsNav"
+        options={{headerShown:false}}
       >
         {(props) => (
-          <CustomerTransactions {...props} onRender={handleScreenRender}/>
+          <CustomerTransactionNav {...props} onRender={handleScreenRender} totalDueOrAdvance={totalDueOrAdvance}/>
         )}
       </Stack.Screen>
 
@@ -62,7 +53,12 @@ export default function HomeNavigation({currentUser, onLogout }) {
         )}
       </Stack.Screen>
 
-      <Stack.Screen name="MyAccount">
+      <Stack.Screen name="MyAccount"
+        options={{headerStyle:{
+          backgroundColor:colors.appToolbar,
+          
+        }, headerTintColor:colors.white}}
+      >
         {(props) => (
           <MyAccount {...props} currentUser={currentUser}/>
         )}

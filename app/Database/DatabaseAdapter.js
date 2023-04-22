@@ -18,8 +18,8 @@ function isUserExists(user) {
   return SQlite.isUserExists(user);
 }
 
-function checkIsUserExists(user_name) {
-  return SQlite.checkisUserExists(user_name);
+function checkIsUserExists(phone_number) {
+  return SQlite.checkisUserExists(phone_number);
 }
 
 function getAllUsers() {
@@ -69,6 +69,26 @@ function getAllPayments(user_id){
    return SQlite.getAllPayments(user_id);
 }
 
+function deleteCustomer(customer){
+  return SQlite.deleteCustomer(customer);
+}
+
+function restoreCustomers(){
+  return SQlite.restoreCustomers();
+}
+
+function deletePayment(payment_id) {
+  return SQlite.deletePayment(payment_id);
+}
+
+function restorePayments(){
+  return SQlite.restorePayments();
+}
+
+function updateCustomer(customer){
+  return SQlite.updateCustomer(customer);
+}
+
 export default {
   addUser,
   createTableUsers,
@@ -85,4 +105,9 @@ export default {
   loginUser,
   addPayment,
   getRecentPayments,
+  deleteCustomer,
+  deletePayment,
+  restoreCustomers,
+  restorePayments,
+  updateCustomer,
 };

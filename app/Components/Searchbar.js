@@ -14,20 +14,22 @@ export default function Searchbar({
   placeholder,
 }) {
   return (
-    <View style={{ width: "100%", backgroundColor: colors.white }}>
+    <View style={{ width: "100%", backgroundColor: colors.appBackground }}>
       <View style={styles.container}>
         <MaterialIcons
           name="person-search"
           size={30}
-          color={colors.secondaryShade}
+          color={colors.iconColor}
           style={{ marginStart: 5 }}
         />
         <SearchBarSeperator />
         <TextInput
           style={styles.searchField}
           onChangeText={(text) => onSearchTextChange(text)}
-          selectionColor={colors.secondaryShade}
+          selectionColor={colors.purple}
           placeholder={placeholder}
+          placeholderTextColor={colors.lightBlack}
+          
         ></TextInput>
         <SearchBarSeperator />
         <AppContextMenu
@@ -36,9 +38,9 @@ export default function Searchbar({
           Icon={() => (
             <Ionicons
               name="ios-filter"
-              size={25}
-              color={colors.secondaryShade}
-              style={{ marginStart: 4 }}
+              size={22}
+              color={colors.iconColor}
+              style={{ marginStart: 2 }}
             />
           )}
           onMenuItemPressed={onMenuItemPressed}
@@ -50,17 +52,18 @@ export default function Searchbar({
 
 const styles = StyleSheet.create({
   container: {
-    width: "95%",
-    height: 45,
-    borderRadius: 10,
-    borderColor: colors.platinum,
-    borderWidth: 2,
-    backgroundColor: colors.white,
-    marginTop: 10,
-    marginBottom: 5,
+    width: "98%",
+    borderRadius: 15,
+    borderColor: colors.borderColor,
+    borderWidth: 1,
+    backgroundColor: colors.appToolbar,
     flexDirection: "row",
     alignSelf: "center",
     alignItems: "center",
+    paddingTop:10,
+    paddingBottom:10,
+    marginTop:10,
+    justifyContent:"center"
   },
 
   searchField: {
@@ -68,5 +71,8 @@ const styles = StyleSheet.create({
     height: "100%",
     paddingStart: 10,
     fontSize: 14,
+    color:colors.white,
+    fontFamily:"Open-Sans-SemiBold",
+    letterSpacing:0.4
   },
 });

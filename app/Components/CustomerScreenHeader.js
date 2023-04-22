@@ -11,7 +11,7 @@ export default function CustomerScreenHeader({
 }) {
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ flexDirection: "row", alignItems: "center", right:10 }}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
         ) : (
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     marginStart: 10,
     fontSize: 17,
+    fontFamily:"Poppins-Medium"
   },
 
   totalDueOrAdvanceContainer: {
@@ -62,14 +63,15 @@ const styles = StyleSheet.create({
     paddingLeft: 6,
     paddingRight: 6,
     borderRadius: 12,
-    elevation: 5,
   },
 
   totalDueOrAdvanceText: {
     color: colors.orange,
+    fontFamily:"Open-Sans-SemiBold"
   },
 
   totalDueOrAdvanceTextAdvance: {
     color: colors.green,
+    fontFamily:"Open-Sans-SemiBold"
   },
 });

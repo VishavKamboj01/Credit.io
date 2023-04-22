@@ -12,10 +12,11 @@ import * as Contact from "expo-contacts";
 
 import AppComponent from "../Components/AppComponent";
 import AppListItem from "../Components/AppListItem";
-import Menus from "../Components/AppMenus";
-import AppListItemSeperator from "../Components/AppListItemSeperator";
-import Searchbar from "../Components/Searchbar";
+import {searchbarMenuItemsContacts} from "../Components/AppMenus";
 import { colors } from "../config/colors";
+import AppText from "../Components/AppText";
+import { AntDesign } from "@expo/vector-icons";
+
 
 export default function Contacts({ navigation }) {
   const [contacts, setContacts] = useState([]);
@@ -24,16 +25,16 @@ export default function Contacts({ navigation }) {
 
   useEffect(() => {
     getContacts();
-  }, [accessPermission]);
+  }, []);
 
   const getContacts = async () => {
     const status = await requestContactsPermission();
     if (status === "granted") {
       const { data } = await Contact.getContactsAsync();
       setContacts(data);
+      setAccessPermission(true);
       return;
     }
-    setAccessPermission(false);
     showAlert();
   };
 
@@ -45,20 +46,20 @@ export default function Contacts({ navigation }) {
   const showAlert = () => {
     Alert.alert(
       "Permission Denied",
-      "Without your permission we won't be able to access your contacts. Would you like to give us your permission?",
+      "You need to enable contacts permissions for this feature.",
       [
         {
-          text: "No",
+          text: "Ok",
           style: "cancel",
         },
-        { text: "Yes", onPress: handleYesPress },
+        // { text: "Yes", onPress: handleYesPress },
       ]
     );
   };
 
-  const handleYesPress = () => {
-    setAccessPermission(true);
-  };
+  // const handleYesPress = () => {
+  //   setAccessPermission(true);
+  // };
 
   const handleAddPress = (id) => {
     const contact = contacts.filter((contact) => contact.id === id);
@@ -75,33 +76,53 @@ export default function Contacts({ navigation }) {
     <AppComponent
       title="Contacts"
       searchbarPlaceholder="Search Contacts"
-      searchBarMenuItems={Menus.searchbarMenuItemsContacts}
+      searchBarMenuItems={searchbarMenuItemsContacts}
       onSearchbarMenuItemPress={handleSearchBarMenuItemPress}
       onSearchbarTextChange={handleSearchbarTextChange}
       selectedSearchbarMenuItem={selectedSearchbarMenuItem}
     >
-      <View>
-        <FlatList
-          data={contacts}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <AppListItem
-              name={item.name}
-              subTitle={item.phoneNumbers[0].number}
-              Icon={() => (
-                <TouchableOpacity onPress={() => handleAddPress(item.id)}>
-                  <Feather
-                    name="plus-circle"
-                    size={30}
-                    color={colors.secondaryShade}
-                    style={{ marginRight: 15 }}
-                  />
-                </TouchableOpacity>
-              )}
-            ></AppListItem>
-          )}
-          ItemSeparatorComponent={() => <AppListItemSeperator />}
-        ></FlatList>
+      <View style={styles.container}>
+        {accessPermission ? 
+        
+          <FlatList
+            data={contacts}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{alignItems:"center"}}
+            renderItem={({ item }) => (
+              <AppListItem
+                name={item.name}
+                subTitle={item.phoneNumbers[0].number}
+                onItemPressed={() => handleAddPress(item.id)}
+                Icon={() => <></>}
+                // Icon={() => (
+                //   <TouchableOpacity onPress={() => handleAddPress(item.id)}>
+                //     <Feather
+                //       name="plus-circle"
+                //       size={30}
+                //       color={colors.purple}
+                //       style={{ marginRight: 15 }}
+                //     />
+                //   </TouchableOpacity>
+                // )}
+                endContainerStyle={{marginRight:-10}}
+              ></AppListItem>
+            )}
+            
+          ></FlatList>
+          :
+          <View style={{flex:1,alignItems:"center", justifyContent:"center", bottom:40}}> 
+            <View>
+              <AppText title="Go to setting >"></AppText> 
+              <AppText title="Search for app permissions >"></AppText> 
+              <AppText title="Select Credit.io >"></AppText> 
+              <AppText title="Enable Contacts Permissions."></AppText>
+            </View>
+          </View>
+        }
+         <TouchableOpacity style={styles.addManuallyButton} onPress={() => navigation.navigate("AddCustomer")}>
+          <AntDesign name="adduser" color={colors.black} size={20}/>
+          <AppText title="ADD MANUALLY" style={{color:colors.black,marginTop:2 }}/>
+         </TouchableOpacity>
       </View>
     </AppComponent>
   );
@@ -109,6 +130,22 @@ export default function Contacts({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 84,
+    marginTop:20,
+    width:"100%",
+    height:"100%",
+    position:"relative"
+  },
+
+  addManuallyButton:{
+    position:"absolute",
+    width:"40%",
+    bottom:120,
+    right:5,
+    backgroundColor:colors.iconColor,
+    borderRadius:40,
+    alignItems:"center",
+    justifyContent:"space-evenly",
+    padding:12,
+    flexDirection:"row",
   },
 });

@@ -7,6 +7,7 @@ export default function AppButton({
   onPress,
   color = "orange",
   style,
+  textStyle,
   textColor = "white",
 }) {
   return (
@@ -14,7 +15,7 @@ export default function AppButton({
       style={[styles.button, { backgroundColor: color }, style]}
       onPress={onPress}
     >
-      <Text style={[styles.text, { color: textColor }]}>{title}</Text>
+      <Text style={[styles.text, textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 50,
     backgroundColor: "orange",
-    borderRadius: 30,
+    borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
@@ -33,5 +34,6 @@ const styles = StyleSheet.create({
   text: {
     color: colors.white,
     textTransform: "uppercase",
+    fontFamily:"Poppins-Medium"
   },
 });

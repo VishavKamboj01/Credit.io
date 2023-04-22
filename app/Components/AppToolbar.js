@@ -23,7 +23,7 @@ export default function AppToolbar({
       </View>
       <View style={styles.iconsContainer}>
         <TouchableOpacity onPress={onSearchIconPress}>
-          <Ionicons name="search-circle" size={32} color={colors.white} />
+          <Ionicons name="search-circle" size={32} color={colors.iconColor} />
         </TouchableOpacity>
         <SearchBarSeperator />
         <AppContextMenu
@@ -32,7 +32,7 @@ export default function AppToolbar({
             <AntDesign
               style={{ marginRight: 10 }}
               name="bars"
-              color="white"
+              color={colors.iconColor}
               size={30}
             ></AntDesign>
           )}
@@ -50,10 +50,13 @@ const styles = StyleSheet.create({
     height: 80,
     width: "100%",
     flexDirection: "row",
-    backgroundColor: "black",
+    backgroundColor: colors.appToolbar,
     alignItems: "center",
     justifyContent: "space-between",
     paddingTop: 24,
+    borderRadius:20,
+    borderWidth:1,
+    borderColor: colors.borderColor
   },
 
   logoContainer: {
