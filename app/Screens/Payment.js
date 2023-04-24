@@ -20,8 +20,8 @@ const numpad = ["1","2","3","4","5","6","7","8","9",".","0","enter"]
 const Payment = ({name, image, navigation, additional}) => {
 
     const [inputValue, setInputValue] = useState("");
-    const [date, setDate] = useState(new Date());
     const [note, setNote] = useState("");
+    const [date, setDate] = useState(new Date());
     const [datePickerVisible, setDatePickerVisible] = useState(false);
     const [noteFieldFocused, setNoteFieldFocused] = useState(false);
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -64,6 +64,7 @@ const Payment = ({name, image, navigation, additional}) => {
             return setInputValue(inputValue+num);
         }
         
+        if(inputValue === "") return;
         //Do the payment and clear the fields
         const paymentInfo = {
             amount: inputValue,
@@ -80,6 +81,7 @@ const Payment = ({name, image, navigation, additional}) => {
         const payment = {
         amount: paymentInfo.amount,
         payment_date_time: paymentInfo.date,
+        payment_date: Utility.getDate(paymentInfo.date),
         payment_type: trigger,
         payment_note: note,
         customer_id,
@@ -154,7 +156,7 @@ const Payment = ({name, image, navigation, additional}) => {
                         {numpad.map( (num) => 
                             <TouchableNativeFeedback key={num} onPress={() => handleNumpadButtonPress(num)}>
                                 <View style = 
-                                    {num === "enter" ? [styles.numpadButton,{backgroundColor:colors.purple}]:
+                                    {num === "enter" ? [styles.numpadButton,inputValue !== "" ? {backgroundColor:colors.purple} : {backgroundColor:"#33333d"}]:
                                         styles.numpadButton}>
                                     {num === "enter" ? 
                                     <Image source={uri=right} style={{width:25, height:25}}/>: 
@@ -169,7 +171,7 @@ const Payment = ({name, image, navigation, additional}) => {
             
             </View>
             
-            <AppDatePicker 
+            <AppDatePicker
                 visible={datePickerVisible}
                 date={date}
                 onDateChange={handleDateChange}/>

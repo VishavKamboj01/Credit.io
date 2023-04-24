@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -20,12 +20,14 @@ export default function PaymentListItem({
   colorsArrayAccepted,
   rightActions,
   leftActions,
+  setIsLoaded,
 }) {
 
   const [viewWidth, setViewWidth] = useState(0);
 
   const lines = Math.ceil(note.length / 33);
   const height = 70 + ((lines-1)*30);
+
 
   return (
       <SwipeablePaymentListItem rightActions={rightActions} leftActions={leftActions} type={type}>

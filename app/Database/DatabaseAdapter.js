@@ -89,6 +89,10 @@ function updateCustomer(customer){
   return SQlite.updateCustomer(customer);
 }
 
+function getPaymentsByDate(user_id, date){
+  return SQlite.getPaymentsByDate(user_id, date);
+}
+
 export default {
   addUser,
   createTableUsers,
@@ -110,4 +114,5 @@ export default {
   restoreCustomers,
   restorePayments,
   updateCustomer,
+  getPaymentsByDate,
 };

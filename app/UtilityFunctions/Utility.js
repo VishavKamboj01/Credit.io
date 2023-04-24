@@ -55,6 +55,10 @@ function jsToSqlDate(date) {
   return sqlDate;
 }
 
+function getDate(dateTime){
+  return dateTime.toISOString().split('T')[0];
+}
+
 function formatTime(d) {
   let date = new Date(d);
   var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
@@ -84,4 +88,5 @@ export default {
   formatTime,
   sqlToJsDate,
   jsToSqlDate,
+  getDate,
 };

@@ -8,6 +8,7 @@ import Utility from "../UtilityFunctions/Utility";
 import { colors } from "../config/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import PaymentSwipeActions from "../Components/PaymentSwipeActions";
+import { ActivityIndicator } from "react-native";
 
 const gradientColorsRed = [
   ["#ea5753","#ffb88e"],
@@ -29,17 +30,22 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
   const [payments, setPayments] = useState([]);
   const {customer_id, user_id} = route.params;
   const [paymentDeleted, setPaymentDeleted] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     // Get payments for a pertucular customer from the database...
     const getPayments = async() => {
        const paymentsArray = await DBAdapter.getPayments(customer_id, user_id);
-       setPayments(paymentsArray);
+
+      const reversed = paymentsArray.reverse();
+
+       setPayments(reversed);
        const dueOrAdvance = getTotalDueOrAdvance(paymentsArray);
        onRender(dueOrAdvance);
-      
+       setIsLoaded(true);
     }
     getPayments();
+
   }, [route, additional.route.params, paymentDeleted]); 
 
   const handleAcceptPaymentPress = () => {
@@ -65,47 +71,55 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
 
   return (
     <View style={styles.container}>
-      <LinearGradient 
-        colors={["rgba(44,45,50,1)","rgba(255,255,255,0)"]}
-        // start={{x: 0, y: 0.75}} end={{x: 1, y: 0.25}}
-        style={{height:6, width:"100%"}}></LinearGradient>
-      <FlatList style={{display:"flex", height:"100%", paddingBottom:20 }}
-        renderItem={({ item }) => (
-          <PaymentListItem
-            amount={item.amount}
-            date={Utility.getReadableDate(item.payment_date_time)}
-            type={item.payment_type}
-            time={Utility.formatTime(item.payment_date_time)}
-            note={item.payment_note}
-            totalDueOrAdvance={getTotalDueOrAdvance(payments)}
-            colorsArrayCredit={gradientColorsRed[getRandomNumber()]}
-            colorsArrayAccepted={gradientColorsGreen[getRandomNumber()]}
-            rightActions={() => 
-                      <PaymentSwipeActions 
-                          type="Credit" 
-                          onDeletePress={() => handleDeletePress(item)}
-                          onEditPress={() => handleEditPress(item)}/>}
-            leftActions={() => 
-                      <PaymentSwipeActions 
-                          type="Accepted" 
-                          onDeletePress={() => handleDeletePress(item)}
-                          onEditPress={() => handleEditPress(item)}/>}
+    {isLoaded ? 
+    <>
+        <LinearGradient 
+          colors={["rgba(44,45,50,1)","rgba(255,255,255,0)"]}
+          // start={{x: 0, y: 0.75}} end={{x: 1, y: 0.25}}
+          style={{height:6, width:"100%"}}></LinearGradient>
+        <FlatList
+          data={payments}
+          renderItem={({ item }) => { 
+            return (
+              <PaymentListItem
+                amount={item.amount}
+                date={Utility.getReadableDate(item.payment_date_time)}
+                type={item.payment_type}
+                time={Utility.formatTime(item.payment_date_time)}
+                note={item.payment_note}
+                totalDueOrAdvance={getTotalDueOrAdvance(payments)}
+                colorsArrayCredit={gradientColorsRed[getRandomNumber()]}
+                colorsArrayAccepted={gradientColorsGreen[getRandomNumber()]}
+                setIsLoaded={setIsLoaded}
+                rightActions={() => 
+                  <PaymentSwipeActions 
+                  type="Credit" 
+                  onDeletePress={() => handleDeletePress(item)}
+                  onEditPress={() => handleEditPress(item)}/>}
+                leftActions={() => 
+                  <PaymentSwipeActions 
+                  type="Accepted" 
+                              onDeletePress={() => handleDeletePress(item)}
+                              onEditPress={() => handleEditPress(item)}/>}
+              />
+            )
+          }}
+          keyExtractor={(item) => item.payment_id.toString()}
+          ItemSeparatorComponent={() => (
+            <View style={{ height: 25, width: "100%" }}></View>
+            )}
+            />
+
+        <PaymentRemote
+          onAcceptPaymentPress={handleAcceptPaymentPress}
+          onGiveCreditPress={handleGiveCreditPress}
           />
-        )}
-        data={payments}
-        keyExtractor={(item) => item.payment_id.toString()}
-        ItemSeparatorComponent={() => (
-          <View style={{ height: 25, width: "100%" }}></View>
-        )}
-      />
-
-      <PaymentRemote
-        onAcceptPaymentPress={handleAcceptPaymentPress}
-        onGiveCreditPress={handleGiveCreditPress}
-      />
-
-    </View>
-  );
+        </> 
+        :
+        <ActivityIndicator color={colors.purple} size={40}/>
+      }
+      </View>
+    );
 }
 
 const getTotalDueOrAdvance = (payments) => {
@@ -122,7 +136,9 @@ const getTotalDueOrAdvance = (payments) => {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "flex-end",
+    width:"100%",
+    height:"100%",
+    justifyContent:"center",
     backgroundColor:colors.appBackground
   },
 });

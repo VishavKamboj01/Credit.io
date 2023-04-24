@@ -60,7 +60,7 @@ export default function TabNavigator({ currentUser, onLogout, paymentMade }) {
         options={({ navigation }) => ({
           tabBarButton: () => (
             <AddCustomerButton
-              onPress={() => navigation.navigate("Contacts")}
+              onPress={() => navigation.navigate("AddCustomerNav")}
             />
           ),
         })}
@@ -69,9 +69,12 @@ export default function TabNavigator({ currentUser, onLogout, paymentMade }) {
 
       <Tab.Screen
         name="AllTransactions"
-        component={AllTransactions}
+        children={(props) => (
+          <AllTransactions {...props} currentUser={currentUser}/>
+        )}
         options={{
           tabBarLabel: "Transactions",
+          unmountOnBlur:true,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="import-export" color={color} size={25} />
           ),

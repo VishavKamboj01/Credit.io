@@ -41,7 +41,6 @@ function createDatabaseSchema() {
   // dropTable("users");
   // dropTable("payments");
   // dropTable("customers");
-  // dropTable("recent_payments");
   createTableUsers();
   createTableCustomers();
   createTablePayments();
@@ -103,10 +102,12 @@ function createTablePayments() {
       payment_id   	  	  INTEGER PRIMARY KEY AUTOINCREMENT,
       amount  	  	  	  DECIMAL(9,2)   NOT NULL,
       payment_date_time   TEXT 	   NOT NULL,
+      payment_date        TEXT     NOT NULL,
       payment_type	  	  VARCHAR(10)    NOT NULL,
       payment_note        VARCHAR(200),
       deleted       VARCHAR(3)   DEFAULT "no",
       deleted_date_time  TEXT,
+      deleted_date       TEXT,
       customer_id 	  	  INTEGER 	   NOT NULL,
       user_id			  	    INTEGER 	   NOT NULL,
       CONSTRAINT fk_customers
@@ -349,8 +350,8 @@ function addPayment(payment) {
         db.transaction(
           (tx) => {
             tx.executeSql(
-              "INSERT INTO payments (amount, payment_date_time, payment_type, payment_note, customer_id, user_id) VALUES (?,?,?,?,?,?)",
-              [payment.amount, payment.payment_date_time.toString(), payment.payment_type, payment.payment_note, payment.customer_id, payment.user_id],
+              "INSERT INTO payments (amount, payment_date_time, payment_date, payment_type, payment_note, customer_id, user_id) VALUES (?,?,?,?,?,?,?)",
+              [payment.amount, payment.payment_date_time.toString(), payment.payment_date.toString(), payment.payment_type, payment.payment_note, payment.customer_id, payment.user_id],
               (txObj, result) => console.log("Successful" + result),
               (txObj, result) => console.log("Error" + result)
             );
@@ -482,6 +483,30 @@ function addPayment(payment) {
     });
   }
 
+  function getPaymentsByDate(user_id, date){
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            `SELECT p.payment_id, 
+                    c.full_name, 
+                    p.amount,
+                    p.payment_date, 
+                    p.payment_date_time, 
+                    p.payment_type
+              FROM payments p 
+              JOIN customers c 
+                ON p.customer_id = c.customer_id
+              WHERE p.user_id = ? AND p.payment_date = ? AND p.deleted = 'no'`,
+            [user_id, date],
+            (txObj, result) => resolve(result.rows._array),
+            (txObj, result) => reject(result)
+          )
+        }
+      )
+    });
+  }
+
 
 export default {
   addUser,
@@ -504,4 +529,5 @@ export default {
   restoreCustomers,
   restorePayments,
   updateCustomer,
+  getPaymentsByDate,
 };
