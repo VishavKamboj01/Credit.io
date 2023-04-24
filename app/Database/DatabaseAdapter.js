@@ -1,5 +1,6 @@
 import SQlite from "../Database/SQlite";
 import Utility from "../UtilityFunctions/Utility";
+import {encryptPassword} from "../auth/encryption";
 
 function getPayments(customer_id, user_id) {
   return SQlite.getPayments(customer_id, user_id);
@@ -11,7 +12,9 @@ function createTableUsers() {
 }
 
 function addUser(user) {
-  SQlite.addUser(user);
+  const encrypted = encryptPassword(user.password);
+  user.password = encrypted;
+  return SQlite.addUser(user);
 }
 
 function isUserExists(user) {
@@ -93,6 +96,10 @@ function getPaymentsByDate(user_id, date){
   return SQlite.getPaymentsByDate(user_id, date);
 }
 
+function removeAccount(user_id){
+  return SQlite.removeAccount(user_id);
+}
+
 export default {
   addUser,
   createTableUsers,
@@ -115,4 +122,5 @@ export default {
   restorePayments,
   updateCustomer,
   getPaymentsByDate,
+  removeAccount,
 };

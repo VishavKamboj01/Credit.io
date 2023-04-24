@@ -1,6 +1,7 @@
 //Actual sql work will be done here
 import * as SQLite from "expo-sqlite";
 import Query from "../Database/SqlQueries";
+import { compare } from "../auth/encryption";
 
 const DATABASE_NAME = "credit_io";
 
@@ -220,12 +221,12 @@ function isUserExists(user) {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM users WHERE phone_number = ? AND password = ?",
-        [user.phone_number, user.password],
+        "SELECT * FROM users WHERE phone_number = ?",
+        [user.phone_number],
         (txObj, success) => {
           if (success.rows._array.length !== 0) {
             resolve({
-              user_id: success.rows._array[0].user_id,
+              user: success.rows._array,
               userExists: true,
               success: success,
             });
@@ -242,18 +243,24 @@ function loginUser(user) {
   const check = async () => {
     try {
       const result = await isUserExists(user);
-
       const { userExists } = result;
+
       if (userExists) {
+        console.log("PASSING TO COM ",user.password+" "+result.user[0].password);
+        const comparison = compare(user.password, result.user[0].password);
+
+        if(!comparison) return false; 
+      
         db.transaction((tx) => {
           tx.executeSql(
             `UPDATE users SET status = "Logged In" WHERE user_id = ?`,
-            [result.user_id]
+            [result.user[0].user_id]
           );
         });
       } else return false;
+
     } catch (error) {
-      console.log(error);
+      console.log("ERROR IN LOGIN SQLITE", error);
     }
     return true;
   };
@@ -507,6 +514,21 @@ function addPayment(payment) {
     });
   }
 
+  function removeAccount(user_id){
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            `DELETE FROM users WHERE user_id = ?`,
+            [user_id],
+            (txObj, result) => resolve(result.rows._array),
+            (txObj, result) => reject(result)
+          )
+        }
+      )
+    });
+  }
+
 
 export default {
   addUser,
@@ -530,4 +552,5 @@ export default {
   restorePayments,
   updateCustomer,
   getPaymentsByDate,
+  removeAccount,
 };

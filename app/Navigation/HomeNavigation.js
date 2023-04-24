@@ -60,7 +60,7 @@ export default function HomeNavigation({currentUser, onLogout }) {
         }, headerTintColor:colors.white}}
       >
         {(props) => (
-          <MyAccount {...props} currentUser={currentUser}/>
+          <MyAccount {...props} currentUser={currentUser} onLogout={onLogout}/>
         )}
       </Stack.Screen>
     </Stack.Navigator>

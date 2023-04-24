@@ -35,7 +35,7 @@ export default function App() {
 
         DBAdapter.createDatabaseSchema();
         const users = await DBAdapter.getAllUsers();
-
+        console.log("USERS  :  ",users);
         let currentUser = undefined;
         for(let user of users)
           if(user.status === "Logged In")
