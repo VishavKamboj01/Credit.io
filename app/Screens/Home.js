@@ -6,6 +6,7 @@ import {searchBarMenuItemsHome, toolbarMenuItemsHome} from "../Components/AppMen
 import { colors } from "../config/colors";
 import AppComponent from "../Components/AppComponent";
 import DBAdapter from "../Database/DatabaseAdapter";
+import { NavigationAction } from "@react-navigation/native";
 
 const FilterType = {
   ALL_CUSTOMERS: 1,
@@ -146,7 +147,10 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
   }
 
   const handleEditIconPress = (item) => {
-    navigation.navigate("AddCustomer", {editCustomer: item});
+    navigation.navigate("AddCustomerNav", {
+      screen: "AddCustomer",
+      editCustomer: item
+    });
   }
 
 

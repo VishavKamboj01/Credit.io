@@ -26,15 +26,16 @@ export default function AddCustomer({ navigation, route, currentUser, additional
 
   useEffect(() => {
     emptyInputFields();
+    console.log(route.params);
     
-    if (additional.route.params?.contact) {
-      const contact = additional.route.params.contact;
+    if (route.params?.contact) {
+      const contact = route.params.contact;
       setFullName(contact.name);
       setPhoneNumber(contact.phoneNumbers[0].number);
     }
 
-    if(additional.route.params?.editCustomer){
-      const customer = additional.route.params.editCustomer;
+    if(route.params?.editCustomer){
+      const customer = route.params.editCustomer;
       setFullName(customer.full_name);
       setPhoneNumber(customer.phone_number);
       setAddress(customer.address);
@@ -42,7 +43,7 @@ export default function AddCustomer({ navigation, route, currentUser, additional
     }
 
 
-  }, [additional.route.params?.contact, additional.route.params?.editCustomer]);
+  }, [route.params?.contact, route.params?.editCustomer]);
 
   const showAlert = () => {
     Alert.alert(
@@ -116,7 +117,7 @@ export default function AddCustomer({ navigation, route, currentUser, additional
       phone_number: phoneNumber,
       address : address,
       image_uri : imageUri,
-      customer_id: additional.route.params.editCustomer.customer_id
+      customer_id: route.params.editCustomer.customer_id
     };
 
     await DBAdapter.updateCustomer(arg);
@@ -171,8 +172,8 @@ export default function AddCustomer({ navigation, route, currentUser, additional
         />
         <AppButton
           style={styles.addCustomerButton}
-          title={additional.route.params?.editCustomer ? "UPDATE CUSTOMER" : "ADD CUSTOMER"}
-          onPress={additional.route.params?.editCustomer ? handleUpdateCustomerPress : handleAddCustomerPress}
+          title={route.params?.editCustomer ? "UPDATE CUSTOMER" : "ADD CUSTOMER"}
+          onPress={route.params?.editCustomer ? handleUpdateCustomerPress : handleAddCustomerPress}
           textStyle={{ fontFamily:"Open-Sans-Bold" }}
         />
       </View>
