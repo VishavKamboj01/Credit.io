@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, ScrollView, Alert, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { colors } from "../config/colors";
 import AppInputField from "../Components/AppInputField";
 import AppButton from "../Components/AppButton";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import DBAdapter from "../Database/DatabaseAdapter";
 import BackButtonInApp from "../Components/BackButtonInApp";
+
+import AddCustomerIcon from "../Components/AddCustomerIcon";
 
 export default function AddCustomer({ navigation, route, currentUser, additional }) {
   const [imageUri, setImageUri] = useState("");
@@ -26,8 +26,7 @@ export default function AddCustomer({ navigation, route, currentUser, additional
 
   useEffect(() => {
     emptyInputFields();
-    console.log(additional.route.params);
-    
+  
     if (additional.route.params?.contact) {
       const contact = additional.route.params.contact;
       setFullName(contact.name);
@@ -89,8 +88,6 @@ export default function AddCustomer({ navigation, route, currentUser, additional
       image_uri: imageUri,
     };
 
-    // setId(id + 1);
-    // emptyInputFields();
 
     const addCustomer = async () => {
       const result = await DBAdapter.createCustomer(currentUser, customer);
@@ -128,25 +125,9 @@ export default function AddCustomer({ navigation, route, currentUser, additional
     <ScrollView style={styles.container}>
       <BackButtonInApp onPress={() => navigation.navigate("Contacts")}/>
       <View style={styles.dataInputsContainer}>
-        <TouchableWithoutFeedback onPress={handleAddImagePress}>
-          <View style={styles.imageInput}>
-            {!imageUri ? (
-              <View style={{ alignItems: "center" }}>
-                <Text style={styles.addImage}>Add Image</Text>
-                <MaterialCommunityIcons
-                  name="plus"
-                  color={colors.iconColor}
-                  size={40}
-                />
-              </View>
-            ) : (
-              <Image
-                source={{ uri: imageUri }}
-                style={{ width: 150, height: 150, borderRadius: 75 }}
-              />
-            )}
-          </View>
-        </TouchableWithoutFeedback>
+
+        <AddCustomerIcon imageUri={imageUri} onPress={handleAddImagePress}/>
+        
         <AppInputField
           inputFieldStyle={{backgroundColor:colors.appToolbar,marginLeft:0}}
           placeholder="Full Name"
@@ -195,15 +176,7 @@ const styles = StyleSheet.create({
     marginTop: 100,
   },
 
-  imageInput: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: colors.appToolbar,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 40,
-  },
+  
 
   addImage: {
     color: colors.iconColor,

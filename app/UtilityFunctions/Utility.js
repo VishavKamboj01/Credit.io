@@ -83,10 +83,16 @@ function timeConvert(time) {
   return time.join(""); // return adjusted time or original string
 }
 
+function getRandomNumber(till) {
+  return Math.round(Math.random() * till);
+}
+
+
 export default {
   getReadableDate,
   formatTime,
   sqlToJsDate,
   jsToSqlDate,
   getDate,
+  getRandomNumber,
 };

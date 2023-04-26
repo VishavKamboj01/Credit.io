@@ -24,37 +24,38 @@ export default function AppContextMenu({
           <MenuTrigger>
             <Icon />
           </MenuTrigger>
-          <MenuOptions>
-            {menuItems.map((item) => {
-              return (
-                <MenuOption
-                  key={item.id}
-                  onSelect={() => onMenuItemPressed(item.id)}
-                  style={
-                    item.id === selectedMenuItem
-                      ? styles.selectedMenuItem
-                      : styles.nonSelectedItem
-                  }
-                >
-                  <MaterialIcons
-                    name={item.icon}
-                    size={20}
-                    color={
-                      item.id === selectedMenuItem ? colors.white : colors.red
-                    }
-                  />
-                  <Text
-                    style={
+          <MenuOptions customStyles={{optionsContainer:{borderRadius:12, borderWidth:1, borderColor:colors.borderColor}}}>
+              {menuItems.map((item) => {
+                return (
+                  <MenuOption
+                    key={item.id}
+                    onSelect={() => onMenuItemPressed(item.id)}
+                    style={[styles.menuItem,
                       item.id === selectedMenuItem
-                        ? styles.selectedItemText
-                        : styles.nonSelectedItemText
-                    }
+                        ? styles.selectedMenuItem
+                        : styles.nonSelectedItem
+                    ,item.id == 1 && {borderTopLeftRadius:10, borderTopRightRadius:10},
+                  item.id == menuItems.length && {borderBottomLeftRadius:10, borderBottomRightRadius:10}]}
                   >
-                    {item.title}
-                  </Text>
-                </MenuOption>
-              );
-            })}
+                    <MaterialIcons
+                      name={item.icon}
+                      size={20}
+                      color={
+                        item.id === selectedMenuItem ? colors.white : colors.iconColor
+                      }
+                    />
+                    <Text
+                      style={
+                        item.id === selectedMenuItem
+                          ? styles.selectedItemText
+                          : styles.nonSelectedItemText
+                      }
+                    >
+                      {item.title}
+                    </Text>
+                  </MenuOption>
+                );
+              })}
           </MenuOptions>
         </Menu>
       ) : (
@@ -65,20 +66,20 @@ export default function AppContextMenu({
 }
 
 const styles = StyleSheet.create({
-  selectedMenuItem: {
+
+  menuItem:{
     flexDirection: "row",
-    backgroundColor: colors.secondary,
-    color: colors.white,
     height: 40,
     alignItems: "center",
   },
 
+  selectedMenuItem: {
+    backgroundColor: colors.iconColor,
+    color: colors.white,
+  },
+
   nonSelectedItem: {
-    flexDirection: "row",
-    height: 40,
-    alignItems: "center",
-    borderBottomColor: colors.platinum,
-    borderBottomWidth: 1,
+    backgroundColor:colors.appToolbar,
   },
 
   selectedItemText: {
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
 
   nonSelectedItemText: {
     marginLeft: 10,
-    color: colors.black,
+    color: colors.iconColor,
     padding: 5,
   },
 });

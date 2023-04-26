@@ -12,6 +12,10 @@ import customerImage from "../assets/customerImage.png";
 import  Swipeable  from "react-native-gesture-handler/Swipeable";
 import RenderRightAction from "./RenderRightAction";
 import {MaterialIcons, AntDesign} from "@expo/vector-icons";
+import AppText from "./AppText";
+import Utility from "../UtilityFunctions/Utility";
+
+const pallet = [colors.purple, colors.blue, "#3F979B"];
 
 export default function AppListItem({
   image = customerImage,
@@ -42,7 +46,10 @@ export default function AppListItem({
       <TouchableNativeFeedback onPress={onItemPressed}>
         <View style={styles.container}>
           {imageUri.length === 0 ? (
-            <Image style={styles.customerImage} source={image} />
+            // <Image style={styles.customerImage} source={image} />
+            <View style={[styles.customerImage,{backgroundColor:pallet[Utility.getRandomNumber(2)], alignItems:"center", justifyContent:"center"}]}>
+              <AppText title={name[0]} style={{fontSize:26, marginTop:3}}/>
+            </View>
           ) : (
             <Image style={styles.customerImage} source={{ uri: imageUri }} />
           )}

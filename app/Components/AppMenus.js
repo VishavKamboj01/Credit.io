@@ -1,16 +1,11 @@
 const toolbarMenuItemsHome = [
   {
     id: "1",
-    title: "All Transactions",
-    icon: "monetization-on",
-  },
-  {
-    id: "2",
     title: "My Account",
     icon: "account-circle",
   },
   {
-    id: "3",
+    id: "2",
     title: "Logout",
     icon: "logout",
   },
@@ -24,16 +19,11 @@ const searchBarMenuItemsHome = [
   },
   {
     id: "2",
-    title: "Newly Added",
-    icon: "group-add",
-  },
-  {
-    id: "3",
     title: "Payment Due",
     icon: "money-off",
   },
   {
-    id: "4",
+    id: "3",
     title: "Payment in Advance",
     icon: "attach-money",
   },

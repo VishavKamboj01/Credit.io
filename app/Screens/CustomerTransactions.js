@@ -22,9 +22,6 @@ const gradientColorsGreen = [
   ["#c9efdc","#f2bbf1"]
 ]
 
-function getRandomNumber() {
-  return Math.round(Math.random() * 2);
-}
 
 export default function CustomerTransactions({ onRender, route, navigation, additional }) {
   const [payments, setPayments] = useState([]);
@@ -88,8 +85,8 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
                 time={Utility.formatTime(item.payment_date_time)}
                 note={item.payment_note}
                 totalDueOrAdvance={getTotalDueOrAdvance(payments)}
-                colorsArrayCredit={gradientColorsRed[getRandomNumber()]}
-                colorsArrayAccepted={gradientColorsGreen[getRandomNumber()]}
+                colorsArrayCredit={gradientColorsRed[Utility.getRandomNumber(2)]}
+                colorsArrayAccepted={gradientColorsGreen[Utility.getRandomNumber(2)]}
                 setIsLoaded={setIsLoaded}
                 rightActions={() => 
                   <PaymentSwipeActions 
