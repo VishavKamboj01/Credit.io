@@ -26,10 +26,10 @@ export default function AddCustomer({ navigation, route, currentUser, additional
 
   useEffect(() => {
     emptyInputFields();
-    console.log(route.params);
+    console.log(additional.route.params);
     
-    if (route.params?.contact) {
-      const contact = route.params.contact;
+    if (additional.route.params?.contact) {
+      const contact = additional.route.params.contact;
       setFullName(contact.name);
       setPhoneNumber(contact.phoneNumbers[0].number);
     }
