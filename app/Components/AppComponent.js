@@ -16,12 +16,14 @@ export default function AppComponent({
   onSearchbarTextChange,
   onSearchbarMenuItemPress,
   onToolbarMenuItemPress,
+  onSearchbarIconPress,
 }) {
   const [isSearchIconPressed, setSearchIconPressed] = useState(false);
 
   const handleSearchIconPress = () => {
     if (isSearchIconPressed) setSearchIconPressed(false);
     else setSearchIconPressed(true);
+    onSearchbarIconPress();
   };
 
   return (

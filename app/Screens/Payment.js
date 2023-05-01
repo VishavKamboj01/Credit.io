@@ -17,7 +17,7 @@ import customerImage from "../assets/customerImage.png";
 
 const numpad = ["1","2","3","4","5","6","7","8","9",".","0","enter"]
 // create a component
-const Payment = ({name, image, navigation, additional}) => {
+const Payment = ({name, image, navigation, additional, color}) => {
 
     const [inputValue, setInputValue] = useState("");
     const [note, setNote] = useState("");
@@ -134,7 +134,9 @@ const Payment = ({name, image, navigation, additional}) => {
         
             <View style={styles.imageAndNameContainer}>
                 {image.length === 0 ? 
-                    <Image style={styles.image} source={customerImage}/>
+                    <View style={[styles.image, {backgroundColor:color}]}>
+                        <AppText title={name[0]} style={{fontSize:40, marginTop:10}}/>
+                    </View>
                     :
                     <Image style={styles.image} source={{uri: image}}/>
                 }
@@ -222,7 +224,9 @@ const styles = StyleSheet.create({
     image:{
         width:125,
         height:125,
-        borderRadius:70
+        borderRadius:70,
+        alignItems:"center", 
+        justifyContent:"center"
     },
 
     name:{

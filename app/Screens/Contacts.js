@@ -22,6 +22,7 @@ export default function Contacts({ navigation }) {
   const [contacts, setContacts] = useState([]);
   const [accessPermission, setAccessPermission] = useState(false);
   const [selectedSearchbarMenuItem, setSelectedSearchbarMenuItem] = useState(1);
+  const [searchbarOpen, setSearchbarOpen] = useState();
 
   useEffect(() => {
     getContacts();
@@ -52,14 +53,10 @@ export default function Contacts({ navigation }) {
           text: "Ok",
           style: "cancel",
         },
-        // { text: "Yes", onPress: handleYesPress },
       ]
     );
   };
 
-  // const handleYesPress = () => {
-  //   setAccessPermission(true);
-  // };
 
   const handleAddPress = (id) => {
     const contact = contacts.filter((contact) => contact.id === id);
@@ -72,6 +69,11 @@ export default function Contacts({ navigation }) {
 
   const handleSearchbarTextChange = (text) => {};
 
+  const handleSearchBarIconPress = () => {
+    if(searchbarOpen) setSearchbarOpen(false);
+    else setSearchbarOpen(true);
+  }
+
   return (
     <AppComponent
       title="Contacts"
@@ -80,6 +82,7 @@ export default function Contacts({ navigation }) {
       onSearchbarMenuItemPress={handleSearchBarMenuItemPress}
       onSearchbarTextChange={handleSearchbarTextChange}
       selectedSearchbarMenuItem={selectedSearchbarMenuItem}
+      onSearchbarIconPress={handleSearchBarIconPress}
     >
       <View style={styles.container}>
         {accessPermission ? 
@@ -108,7 +111,7 @@ export default function Contacts({ navigation }) {
             </View>
           </View>
         }
-         <TouchableOpacity style={styles.addManuallyButton} onPress={() => navigation.navigate("AddCustomer")}>
+         <TouchableOpacity style={[styles.addManuallyButton,searchbarOpen && {bottom:182}]} onPress={() => navigation.navigate("AddCustomer")}>
           <AntDesign name="adduser" color={colors.black} size={20}/>
           <AppText title="ADD MANUALLY" style={{color:colors.black,marginTop:2 }}/>
          </TouchableOpacity>

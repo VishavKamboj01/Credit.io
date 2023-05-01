@@ -42,6 +42,7 @@ const CustomerTransactionNav = (props) => {
                   name={props.route.params.name} 
                   image={props.route.params.image}
                   // onEnterPress={handleEnterPress}
+                  color={props.route.params.color}
                   additional={additional}/>}
             </Stack.Screen>
         </Stack.Navigator>

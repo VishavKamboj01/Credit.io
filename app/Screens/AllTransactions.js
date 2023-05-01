@@ -109,10 +109,7 @@ const AllTransactions = ({currentUser}) => {
           renderItem={({item}) => {
             if(item.payment_id === -1){
               return (
-                <View style={styles.infoContainer}>
-                
-      
-               
+                <View style={styles.infoContainer}>         
                 <TransactionAmount
                   style={{paddingLeft:15, bottom:10}}
                   Icon={() => <AntDesign 

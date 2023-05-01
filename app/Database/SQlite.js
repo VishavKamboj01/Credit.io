@@ -83,6 +83,7 @@ function createTableCustomers() {
         phone_number  VARCHAR(50)  NOT NULL,
         image_uri	    VARCHAR(255) NOT NULL,
         deleted       VARCHAR(5)   DEFAULT "no",
+        deleted_date  TEXT,
         deleted_date_time  TEXT,
         CONSTRAINT fk_users
           FOREIGN KEY (user_id)
@@ -363,20 +364,6 @@ function addPayment(payment) {
               (txObj, result) => console.log("Error" + result)
             );
 
-            // tx.executeSql(
-            //   "DELETE FROM recent_payments WHERE customer_id=? AND user_id=?",
-            //   [payment.customer_id, payment.user_id],
-            //   (txObj, result) => console.log("Successful" + result),
-            //   (txObj, result) => console.log("Error" + result)
-            // );
-
-            // tx.executeSql(
-            //   "INSERT INTO recent_payments (amount, payment_date_time, payment_type, payment_note, customer_id, user_id) VALUES (?,?,?,?,?,?)",
-            //   [payment.amount, payment.payment_date_time.toString(), payment.payment_type, payment.payment_note, payment.customer_id, payment.user_id],
-            //   (txObj, result) => console.log("Successful" + result),
-            //   (txObj, result) => console.log("Error" + result)
-            // );
-
           },
           (err) => reject(err),
           (success) => resolve(success)
@@ -394,16 +381,6 @@ function addPayment(payment) {
       }
 
       resolve(recentPayments);
-      // db.transaction(
-      //   (tx) => {
-      //     tx.executeSql(
-      //       "SELECT * FROM recent_payments WHERE user_id=? AND deleted = 'no'",
-      //       [user_id],
-      //       (txObj, result) => resolve(result.rows._array),
-      //       (txObj, result) => reject(result)
-      //     )
-      //   }
-      // )
     });
   }
 
@@ -412,15 +389,15 @@ function addPayment(payment) {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            `UPDATE customers SET deleted = "yes", deleted_date_time = ? WHERE customer_id=?;`,
-            [customer.deleted_date_time, customer.customer_id],
+            `UPDATE customers SET deleted = "yes", deleted_date_time = ?, deleted_date = ? WHERE customer_id=?;`,
+            [customer.deleted_date_time, customer.deleted_date, customer.customer_id],
             (txObj, result) => resolve(result.rows._array),
             (txObj, result) => reject(result)
           )
 
           tx.executeSql(
-            `UPDATE payments SET deleted = 'yes', deleted_date_time = ? WHERE customer_id = ?;`,
-            [customer.deleted_date_time, customer.customer_id],
+            `UPDATE payments SET deleted = 'yes', deleted_date_time = ?, deleted_date = ? WHERE customer_id = ?;`,
+            [customer.deleted_date_time, customer.deleted_date, customer.customer_id],
             (txObj, result) => resolve(result.rows._array),
             (txObj, result) => reject(result)
           )
@@ -430,13 +407,13 @@ function addPayment(payment) {
   }
 
   //ALSO NEED TO RESTORE THE PAYMENTS FOR THE CUSTOMERS
-  function restoreCustomers(){
+  function restoreCustomers(restoreDate, today){
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            `UPDATE customers SET deleted = "no", deleted_date_time = "" WHERE deleted = "yes";`,
-            [],
+            `UPDATE customers SET deleted = "no", deleted_date_time = "" WHERE deleted_date BETWEEN ? AND ?;`,
+            [restoreDate, today],
             (txObj, result) => resolve(result.rows._array),
             (txObj, result) => reject(result)
           )
@@ -450,8 +427,8 @@ function addPayment(payment) {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            `UPDATE payments SET deleted = 'yes', deleted_date_time = ? WHERE payment_id = ?;`,
-            [payment.deleted_date_time, payment.payment_id],
+            `UPDATE payments SET deleted = 'yes', deleted_date_time = ?, deleted_date = ? WHERE payment_id = ?;`,
+            [payment.deleted_date_time, payment.deleted_date, payment.payment_id],
             (txObj, result) => resolve(result.rows._array),
             (txObj, result) => reject(result)
           )
@@ -460,13 +437,13 @@ function addPayment(payment) {
     });
   }
 
-  function restorePayments(){
+  function restorePayments(restoreDate, today){
     return new Promise((resolve, reject) => {
       db.transaction(
         (tx) => {
           tx.executeSql(
-            `UPDATE payments SET deleted = 'no', deleted_date_time = '' WHERE deleted = 'yes'`,
-            [],
+            `UPDATE payments SET deleted = 'no', deleted_date_time = '' WHERE deleted_date BETWEEN ? AND ?;`,
+            [restoreDate, today],
             (txObj, result) => resolve(result.rows._array),
             (txObj, result) => reject(result)
           )

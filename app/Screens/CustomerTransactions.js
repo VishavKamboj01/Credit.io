@@ -55,7 +55,8 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
   const handleDeletePress = async(payment) => {
       const arg = {
         payment_id: payment.payment_id,
-        deleted_date_time: new Date().toString()
+        deleted_date_time: new Date().toString(),
+        deleted_date: Utility.getDate(new Date())
       }
       await DBAdapter.deletePayment(arg);
       setPaymentDeleted(paymentDeleted+1);

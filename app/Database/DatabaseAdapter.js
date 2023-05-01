@@ -76,16 +76,16 @@ function deleteCustomer(customer){
   return SQlite.deleteCustomer(customer);
 }
 
-function restoreCustomers(){
-  return SQlite.restoreCustomers();
+function restoreCustomers(restoreDate, today){
+  return SQlite.restoreCustomers(restoreDate, today);
 }
 
 function deletePayment(payment_id) {
   return SQlite.deletePayment(payment_id);
 }
 
-function restorePayments(){
-  return SQlite.restorePayments();
+function restorePayments(restoreDate, today){
+  return SQlite.restorePayments(restoreDate, today);
 }
 
 function updateCustomer(customer){

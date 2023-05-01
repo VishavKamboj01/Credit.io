@@ -57,7 +57,10 @@ export default function HomeNavigation({currentUser, onLogout }) {
         options={{headerStyle:{
           backgroundColor:colors.appToolbar,
           
-        }, headerTintColor:colors.white}}
+        }, headerTintColor:colors.white,
+      headerShown:false}
+      
+      }
       >
         {(props) => (
           <MyAccount {...props} currentUser={currentUser} onLogout={onLogout}/>

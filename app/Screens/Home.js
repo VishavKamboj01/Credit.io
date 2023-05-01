@@ -6,6 +6,7 @@ import {searchBarMenuItemsHome, toolbarMenuItemsHome} from "../Components/AppMen
 import { colors } from "../config/colors";
 import AppComponent from "../Components/AppComponent";
 import DBAdapter from "../Database/DatabaseAdapter";
+import Utility from "../UtilityFunctions/Utility";
 
 const FilterType = {
   ALL_CUSTOMERS: 1,
@@ -129,7 +130,8 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
   const handleDeleteIconPress = async(item) => {
     const customer = {
       customer_id: item.customer_id,
-      deleted_date_time: new Date().toString()
+      deleted_date_time: new Date().toString(),
+      deleted_date: Utility.getDate(new Date())
     }
     
     try{
