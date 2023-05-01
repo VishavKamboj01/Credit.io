@@ -100,6 +100,10 @@ function removeAccount(user_id){
   return SQlite.removeAccount(user_id);
 }
 
+function updatePayment(payment){
+  return SQlite.updatePayment(payment);
+}
+
 export default {
   addUser,
   createTableUsers,
@@ -123,4 +127,5 @@ export default {
   updateCustomer,
   getPaymentsByDate,
   removeAccount,
+  updatePayment,
 };

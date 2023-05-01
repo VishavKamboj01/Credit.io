@@ -4,6 +4,7 @@ import DatabaseAdapter from '../Database/DatabaseAdapter';
 import { ToastAndroid } from 'react-native';
 import { colors } from '../config/colors';
 import LoaderButton from '../Components/LoaderButton';
+import AddCustomerIcon from '../Components/AddCustomerIcon';
 
 export default function MyAccount({currentUser, onRestorePress, navigation, onLogout}) {
   const [showRestoreIndicator, setShowRestoreIndicator] = useState(false);
@@ -38,9 +39,17 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
     }
   }
 
+  const onAddImagePress = () => {
+    console.log("add Image press");
+  }
+
   return (
     <View style={styles.container}>
       <Text>{currentUser.user_name}</Text>
+      <AddCustomerIcon 
+        onPress={onAddImagePress}
+        containerStyle={{width:130, height:130, marginTop:20}}
+        imageStyle={{width:130, height:130}}/>
       <LoaderButton 
           title="RESTORE" 
           showIndicator={showRestoreIndicator}
@@ -54,8 +63,7 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
           buttonStyle={[styles.restoreButton, {marginTop:20, backgroundColor:colors.red}]}
           onPress={handleRemoveAccountPress}
           textStyle={{color:colors.black, fontFamily:"Open-Sans-SemiBold"}}/> 
-
-       <View style={{width:200, heigth:300, backgroundColor:"red"}}></View>      
+   
     </View>
   )
 }

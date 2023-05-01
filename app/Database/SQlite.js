@@ -529,6 +529,21 @@ function addPayment(payment) {
     });
   }
 
+  function updatePayment(payment){
+    return new Promise((resolve, reject) => {
+      db.transaction(
+        (tx) => {
+          tx.executeSql(
+            `UPDATE payments SET amount=?, payment_note=? WHERE payment_id=?`,
+            [payment.amount, payment.payment_note, payment.payment_id],
+            (txObj, result) => resolve(result.rows._array),
+            (txObj, result) => reject(result)
+          )
+        }
+      )
+    });
+  }
+
 
 export default {
   addUser,
@@ -553,4 +568,5 @@ export default {
   updateCustomer,
   getPaymentsByDate,
   removeAccount,
+  updatePayment,
 };

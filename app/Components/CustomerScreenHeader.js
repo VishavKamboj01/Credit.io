@@ -1,21 +1,24 @@
 import React from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
 
-import image from "../assets/customerImage.png";
+import ListCustomerImage from "./ListCustomerImage";
 import { colors } from "../config/colors";
 
 export default function CustomerScreenHeader({
   name,
   imageUri,
   totalDueOrAdvance,
+  color
 }) {
+
+
   return (
     <View style={styles.container}>
-      <View style={{ flexDirection: "row", alignItems: "center", right:10 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", right:18 }}>
         {imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
         ) : (
-          <Image style={styles.image} source={image} />
+          <ListCustomerImage name={name} color={color} imageUri=""/>
         )}
 
         <Text style={styles.name}>{name}</Text>

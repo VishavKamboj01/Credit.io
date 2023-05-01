@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { FlatList, View } from "react-native";
-import { colors } from "../config/colors";
 
 import AppListItem from "./AppListItem";
-import AppListItemSeperator from "./AppListItemSeperator";
 
-export default function AppList({ items, onListItemPressed, onDeleteIconPress, onEditIconPress }) {
+export default function AppList({ isSwipeable, items, onListItemPressed, onDeleteIconPress, onEditIconPress }) {
   return (
     <FlatList
       inverted
@@ -18,11 +16,12 @@ export default function AppList({ items, onListItemPressed, onDeleteIconPress, o
             subTitle={item.recentActivity}
             payment={item.payment}
             paymentStatus={item.paymentType}
-            onItemPressed={() => onListItemPressed(item)}
+            onItemPressed={(color) => onListItemPressed(item, color)}
             imageUri={item.image_uri}
             uniqueValue={item.customer_id}
             onDeleteIconPress={() => onDeleteIconPress(item)}
             onEditIconPress={() => onEditIconPress(item)}
+            isSwipeable={isSwipeable}
           />
         );
       }}

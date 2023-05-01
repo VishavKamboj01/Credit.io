@@ -35,7 +35,6 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
        const paymentsArray = await DBAdapter.getPayments(customer_id, user_id);
 
       const reversed = paymentsArray.reverse();
-
        setPayments(reversed);
        const dueOrAdvance = getTotalDueOrAdvance(paymentsArray);
        onRender(dueOrAdvance);
@@ -63,7 +62,7 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
   }
 
   const handleEditPress = (payment) => {
-    console.log("Edit: ",payment);
+    navigation.navigate("Payment", {payment})
   }
 
   return (

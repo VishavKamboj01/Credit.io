@@ -94,17 +94,6 @@ export default function Contacts({ navigation }) {
                 subTitle={item.phoneNumbers[0].number}
                 onItemPressed={() => handleAddPress(item.id)}
                 Icon={() => <></>}
-                // Icon={() => (
-                //   <TouchableOpacity onPress={() => handleAddPress(item.id)}>
-                //     <Feather
-                //       name="plus-circle"
-                //       size={30}
-                //       color={colors.purple}
-                //       style={{ marginRight: 15 }}
-                //     />
-                //   </TouchableOpacity>
-                // )}
-                endContainerStyle={{marginRight:-10}}
               ></AppListItem>
             )}
             

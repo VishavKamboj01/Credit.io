@@ -7,6 +7,10 @@ import AppInputField from "../Components/AppInputField";
 import AppButton from "../Components/AppButton";
 import DBAdapter from "../Database/DatabaseAdapter";
 import BackButtonInApp from "../Components/BackButtonInApp";
+import name from "../assets/images/name.png";
+import phone from "../assets/images/phone.png";
+import location from "../assets/images/location.png";
+
 
 import AddCustomerIcon from "../Components/AddCustomerIcon";
 
@@ -133,6 +137,8 @@ export default function AddCustomer({ navigation, route, currentUser, additional
           placeholder="Full Name"
           value={fullName}
           onChangeText={(text) => setFullName(text)}
+          outIcon={name}
+          outIconStyle={{width:39, height:39}}
         />
 
         <AppInputField
@@ -141,6 +147,8 @@ export default function AddCustomer({ navigation, route, currentUser, additional
           value={phoneNumber}
           onChangeText={(text) => setPhoneNumber(text)}
           keyboardType="number-pad"
+          outIcon={phone}
+          outIconStyle={{width:33, height:33}}
         />
         <AppInputField
           inputFieldStyle={{backgroundColor:colors.appToolbar, marginLeft:0}}
@@ -150,6 +158,8 @@ export default function AddCustomer({ navigation, route, currentUser, additional
           multiline={true}
           textAlignVertical="top"
           onChangeText={(text) => setAddress(text)}
+          outIcon={location}
+          outIconStyle={{width:33, height:33}}
         />
         <AppButton
           style={styles.addCustomerButton}
@@ -185,7 +195,7 @@ const styles = StyleSheet.create({
   addCustomerButton: {
     backgroundColor: colors.purple,
     width: "85%",
-    marginTop: 20,
+    marginTop: 35,
     marginBottom: 30,
     elevation:1,
   },

@@ -25,7 +25,7 @@ export default function PaymentListItem({
 
   const [viewWidth, setViewWidth] = useState(0);
 
-  const lines = Math.ceil(note.length / 33);
+  const lines = note === null ? 0 : Math.ceil(note.length / 33);
   const height = 70 + ((lines-1)*30);
 
 

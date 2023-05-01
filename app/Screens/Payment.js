@@ -1,5 +1,5 @@
 //import liraries
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useState, useRef } from 'react';
 import { Image, Keyboard } from 'react-native';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '../config/colors';
@@ -27,6 +27,14 @@ const Payment = ({name, image, navigation, additional}) => {
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
     useEffect(() => {
+        if(additional.route.params.payment){
+            const payment = additional.route.params.payment;
+            const date = new Date(payment.payment_date_time);
+            setDate(date);
+            setNote(payment.payment_note);
+            setInputValue(payment.amount+"");
+        }
+
        const keyboardDidShowListener = Keyboard.addListener(
          'keyboardDidShow',
          () => {
@@ -59,7 +67,7 @@ const Payment = ({name, image, navigation, additional}) => {
         setDate(currentDate);
     };
 
-    const handleNumpadButtonPress = (num) => {
+    const handleNumpadButtonPress = async(num) => {
         if(num !== "enter"){
             return setInputValue(inputValue+num);
         }
@@ -69,10 +77,25 @@ const Payment = ({name, image, navigation, additional}) => {
         const paymentInfo = {
             amount: inputValue,
             date: date,
-            note: note
+            payment_note: note
         }
 
         const {trigger, customer_id, user_id} = additional.route.params;
+        //Update Payment
+        if(additional.route.params.payment){
+            try{
+                console.log("UPDATING PAYMENT");
+                paymentInfo.payment_id = additional.route.params.payment.payment_id;
+                
+                await DatabaseAdapter.updatePayment(paymentInfo);
+                ToastAndroid.show("Updated!", ToastAndroid.LONG);
+            }catch(err){
+                console.log("ERROR IN UPDATE PAYMENT ", err);
+            }
+            navigation.navigate("CustomerTransactions", {paymentAdded:true});
+            return ;
+        }
+
         addPayment(paymentInfo, trigger, customer_id, user_id);
         navigation.navigate("CustomerTransactions", {paymentAdded:true});
     }
@@ -95,8 +118,6 @@ const Payment = ({name, image, navigation, additional}) => {
             console.log("ERROR in Payment", err);
             ToastAndroid.show("Failed!", ToastAndroid.LONG);
         }
-
-        // setPaymentMade(paymentMade+1);
       };
 
     const handleBackSpacePress = () => {
@@ -127,6 +148,7 @@ const Payment = ({name, image, navigation, additional}) => {
                 <View style={styles.inputAndIconContainer}>
                     <MaterialCommunityIcons name='currency-inr' size={40} color={colors.purple}/>
                     <TextInput 
+                        onChangeText={text => setInputValue(text)}
                         value={inputValue} 
                         onFocus={() => Keyboard.dismiss()} 
                         style={[styles.input, {paddingRight:40}]} 

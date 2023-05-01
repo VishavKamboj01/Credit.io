@@ -22,6 +22,7 @@ const CustomerTransactionNav = (props) => {
                     name={props.route.params.name}
                     imageUri={props.route.params.image}
                     totalDueOrAdvance={props.totalDueOrAdvance}
+                    color={props.route.params.color}
                   />
                 ),
                 headerStyle: { 
@@ -33,8 +34,6 @@ const CustomerTransactionNav = (props) => {
                 {(additional) => <CustomerTransactions {...props} 
                                   additional={additional} 
                                   onRender={props.onRender}
-                                  // paymentInfo={paymentInfo}
-                                  // trigger={trigger}
                                   />}
             </Stack.Screen>
             <Stack.Screen

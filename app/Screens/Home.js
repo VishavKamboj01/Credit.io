@@ -6,19 +6,16 @@ import {searchBarMenuItemsHome, toolbarMenuItemsHome} from "../Components/AppMen
 import { colors } from "../config/colors";
 import AppComponent from "../Components/AppComponent";
 import DBAdapter from "../Database/DatabaseAdapter";
-import { NavigationAction } from "@react-navigation/native";
 
 const FilterType = {
   ALL_CUSTOMERS: 1,
-  NEWLY_ADDED: 2,
-  PAYMENT_DUE: 3,
-  PAYMENT_ADVANCE: 4
+  PAYMENT_DUE: 2,
+  PAYMENT_ADVANCE: 3
 };
 
 const MenuItemType = {
-   ALL_TRANSACTIONS: 1,
-   MY_ACCOUNT: 2,
-   LOGOUT: 3
+   MY_ACCOUNT: 1,
+   LOGOUT: 2
 };
 
 export default function Home({ navigation, route, currentUser, onLogout, paymentMade }) {
@@ -79,12 +76,13 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
     }, 0);
   }
 
-  const handleListItemPressed = (item) => {
+  const handleListItemPressed = (item, color) => {
     navigation.navigate("CustomerTransactionsNav", {
       user_id: currentUser.user_id,
       customer_id: item.customer_id,
       name: item.full_name,
       image: item.image_uri,
+      color,
     });
   };
 
@@ -173,6 +171,7 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
             onListItemPressed={handleListItemPressed}
             onDeleteIconPress={handleDeleteIconPress}
             onEditIconPress={handleEditIconPress}
+            isSwipeable={true}
           />
         ) : (
           <View

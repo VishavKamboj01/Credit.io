@@ -6,13 +6,13 @@ import { View, Text, StyleSheet, TouchableWithoutFeedback, Image } from 'react-n
 import { colors } from '../config/colors';
 
 // create a component
-const AddCustomerIcon = ({onPress, imageUri}) => {
+const AddCustomerIcon = ({onPress, imageUri, containerStyle, imageStyle}) => {
     return (
         <TouchableWithoutFeedback onPress={onPress}>
-          <View style={styles.imageInput}>
+          <View style={[styles.imageInput, containerStyle]}>
             {!imageUri ? (
                 <View style={{ alignItems: "center", position:"relative" }}>
-                    <Image style={{width:151, height:151}} source={profileUserIcon}/>
+                    <Image style={[{width:151, height:151},imageStyle]} source={profileUserIcon}/>
                     <Image style={styles.cameraIcon} source={camera}/>
                 </View>
                 ) : (

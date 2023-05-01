@@ -14,8 +14,10 @@ import RenderRightAction from "./RenderRightAction";
 import {MaterialIcons, AntDesign} from "@expo/vector-icons";
 import AppText from "./AppText";
 import Utility from "../UtilityFunctions/Utility";
+import ListCustomerImage from "./ListCustomerImage";
 
 const pallet = [colors.purple, colors.blue, "#3F979B"];
+
 
 export default function AppListItem({
   image = customerImage,
@@ -29,31 +31,32 @@ export default function AppListItem({
   endContainerStyle,
   onDeleteIconPress,
   onEditIconPress,
+  isSwipeable,
 }) {
 
+  const renderActions = () => {
+    if(!isSwipeable) return <></>;
+    return (
+      <>
+          <RenderRightAction Icon={() => 
+              <AntDesign name="edit" size={28} color={colors.white} onPress={onEditIconPress}/>} bgColor={colors.blue}/>
+          <RenderRightAction Icon={() => 
+              <MaterialIcons name="delete-forever" size={30} color={colors.white} onPress={onDeleteIconPress}/>} bgColor={colors.red}/>
+      </>
+    )
+  }
+
+  const currColor = pallet[Utility.getRandomNumber(2)];
   
   return (
     <Swipeable 
       containerStyle={{width:"100%", alignItems:"center"}}
-      renderRightActions={() => <>
-            <RenderRightAction Icon={() => 
-                <AntDesign name="edit" size={28} color={colors.white} onPress={onEditIconPress}/>} bgColor={colors.blue}/>
-            <RenderRightAction Icon={() => 
-                <MaterialIcons name="delete-forever" size={30} color={colors.white} onPress={onDeleteIconPress}/>} bgColor={colors.red}/>
-        </>}
-      >
+      renderRightActions={renderActions}>
       
-      <TouchableNativeFeedback onPress={onItemPressed}>
+      <TouchableNativeFeedback onPress={() => onItemPressed(currColor)}>
         <View style={styles.container}>
-          {imageUri.length === 0 ? (
-            // <Image style={styles.customerImage} source={image} />
-            <View style={[styles.customerImage,{backgroundColor:pallet[Utility.getRandomNumber(2)], alignItems:"center", justifyContent:"center"}]}>
-              <AppText title={name[0]} style={{fontSize:26, marginTop:3}}/>
-            </View>
-          ) : (
-            <Image style={styles.customerImage} source={{ uri: imageUri }} />
-          )}
-
+          
+          <ListCustomerImage name={name} imageUri={imageUri} color={currColor}/>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{name}</Text>
             <View style={{flexDirection:"row", 
@@ -107,12 +110,6 @@ const styles = StyleSheet.create({
     paddingRight:4
   },
 
-  customerImage: {
-    width: 50,
-    height: 50,
-    marginStart: 10,
-    borderRadius: 25,
-  },
 
   titleContainer: {
     marginStart: 15,

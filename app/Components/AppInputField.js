@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, TextInput } from "react-native";
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
+import { StyleSheet, View, Text, TextInput, Image } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { colors } from "../config/colors";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
@@ -23,6 +23,8 @@ export default function AppInputField({
   onBlur,
   focused,
   inputFieldStyle,
+  outIcon,
+  outIconStyle,
   ...props
 }) {
 
@@ -33,12 +35,21 @@ export default function AppInputField({
         <View style={focused ? 
                   [styles.inputFeildContainer,{borderColor:colors.purple}, inputFieldStyle] : 
                   [styles.inputFeildContainer, inputFieldStyle]}>
-          <MaterialCommunityIcons
-            name={icon}
-            size={24}
-            color={colors.inputPlaceholder}
-            style={{ marginStart: 10 }}
-          />
+          {icon && 
+            <MaterialCommunityIcons
+              name={icon}
+              size={24}
+              color={colors.inputPlaceholder}
+              style={{ marginStart: 10 }}
+            />
+          }
+
+          {outIcon && 
+            <View style={styles.outIcon}>
+              <Image style={outIconStyle} source={outIcon}/>
+            </View>
+          }
+
             <TextInput
               style={multiline ? [styles.multilineInputField, inputFieldStyle] : [styles.inputField, inputFieldStyle]}
               onChangeText={onChangeText}
@@ -78,6 +89,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textFeildBackgroundColor,
     borderWidth:0.5,
     borderColor: colors.textFeildBorderColor,
+    position:"relative"
+  },
+
+  outIcon:{
+    width:30, 
+    height:30, 
+    backgroundColor: colors.white, 
+    position:"absolute",
+    bottom:-10,
+    left:-15,
+    borderRadius:20,
+    alignItems:"center",
+    justifyContent:"center"
   },
 
   title:{
