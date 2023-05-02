@@ -16,14 +16,14 @@ const AccountListItem = (
         <View style={styles.container}>
             <View style={styles.iconAndTitleContainer}>
                 {Icon && <Icon/>}
-                <View style={[{marginLeft:15, width:"100%"}, buttonTitle !== "" && {width:"65%"}]}>
+                <View style={[{marginLeft:14, width:"100%"}, buttonTitle !== "" && {width:"65%"}]}>
                     <AppText style={{color:colors.white}} title={title}/>
                     <TextInput 
                         onChangeText={(text) => inputValue.setInputValue(text)}
                         editable={editable}
                         placeholder={subtitle}
                         placeholderTextColor={editable ? colors.iconColor : colors.lightWhite}
-                        style={{fontSize:16, fontFamily:"Open-Sans-Medium", color:colors.white}}
+                        style={{fontSize:15, fontFamily:"Open-Sans-Medium", color:colors.white}}
                         keyboardType={keyboardType}
                         cursorColor={colors.purple}
                         />
@@ -31,7 +31,7 @@ const AccountListItem = (
             </View>
             <TouchableWithoutFeedback onPress={!buttonDisable ? onButtonPress : () => {}}>
                 <View style={styles.buttonTextContainer}>
-                    <AppText style={[{marginRight:10,fontSize: 15, color:colors.purple}, buttonDisable && {color:colors.lightBlack}]} title={buttonTitle}/>
+                    <AppText style={[{fontSize: 14, color:colors.purple}, buttonDisable && {color:colors.lightBlack}]} title={buttonTitle}/>
                 </View>
             </TouchableWithoutFeedback>
         </View>
@@ -56,12 +56,12 @@ const styles = StyleSheet.create({
     iconAndTitleContainer:{
         flexDirection:"row", 
         alignItems:"center", 
-        marginLeft:10
+        marginLeft:5
     },
 
     buttonTextContainer:{
         position:"absolute",
-        right:10,
+        right:5,
     }
 });
 

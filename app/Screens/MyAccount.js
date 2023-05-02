@@ -11,6 +11,9 @@ import {Entypo, FontAwesome, MaterialIcons, MaterialCommunityIcons} from "@expo/
 import { ScrollView } from 'react-native';
 import Utility from '../UtilityFunctions/Utility';
 import BackButtonInApp from '../Components/BackButtonInApp';
+import AppDialogBox from '../Components/AppDialogBox';
+
+
 
 
 export default function MyAccount({currentUser, onRestorePress, navigation, onLogout}) {
@@ -18,71 +21,116 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
   const [usernameValue, setUsernameValue] = useState("");
   const [phoneNumberValue, setPhoneNumberValue] = useState("");
   const [emailValue, setEmailValue] = useState("");
-  
+  const [showDialogId, setShowDialogId] = useState(-1);
+
+
+  const dialogBoxData = [
+    {
+      id:"1",
+      title: "Save Username",
+      description: "Are you sure you want to use " + usernameValue + " as your Username?",
+      cancelButtonTitle: "NO",
+      submitButtonTitle: "YES"
+    },
+
+    {
+      id:"2",
+      title: "Change Phone Number",
+      description: "All your data will be moved to a new Phone Number. Are you sure you want to continue?",
+      cancelButtonTitle: "NO",
+      submitButtonTitle: "YES"
+    },
+
+    {
+      id:"3",
+      title: "Change Email",
+      description: "Are you sure you want to change your email to " + emailValue + "?",
+      cancelButtonTitle: "NO",
+      submitButtonTitle: "YES"
+    },
+
+    {
+      id:"4",
+      title: "Restore",
+      description: `All the deleted Customers and Transactions till ${restoreValue} ${restoreValue == 1 ? " day" : " days"} ago will be restored.`,
+      cancelButtonTitle: "CANCEL",
+      submitButtonTitle: "OK"
+    },
+
+    {
+      id:"5",
+      title: "Remove Account",
+      description: "All your data will be removed and cannot be restored. Are you sure you want to continue?",
+      cancelButtonTitle: "CANCEL",
+      submitButtonTitle: "REMOVE"
+    },
+  ]
+
+
   const items = [
     {
       id:"1", 
       title:"Username", 
       subtitle:"Enter your Username", 
-      leftIcon: () => <FontAwesome style={{marginLeft:6}} name="user" size={28} color={colors.purple}/>,
+      leftIcon: () => <FontAwesome style={{marginLeft:6}} name="user" size={26} color={colors.purple}/>,
       buttonTitle: currentUser.user_name === "" ? "SAVE" : "CHANGE USERNAME",
       editable:true,
       buttonDisabled:usernameValue === "",
       value: {inputValue: usernameValue, setInputValue: setUsernameValue},
       keyboardType:"default",
-      handleButtonPress: () => {}
+      handleButtonPress: () => {setShowDialogId(0)}
     },
   
     {
       id:"2", 
       title:"Mobile Number", 
       subtitle:currentUser.phone_number,
-      leftIcon: () => <Entypo name="mobile" size={28} color={colors.purple}/>,
+      leftIcon: () => <Entypo name="mobile" size={26} color={colors.purple}/>,
       buttonTitle: "CHANGE NUMBER",
       editable:false,
       buttonDisabled:false,
       value: {inputValue: phoneNumberValue, setInputValue: setPhoneNumberValue},
       keyboardType:"phone-pad",
-      handleButtonPress: () => {}
+      handleButtonPress: () => {setShowDialogId(1)}
     },
   
     {
       id:"3", 
       title:"Email", 
       subtitle:currentUser.email, 
-      leftIcon: () => <MaterialIcons name="email" size={28} color={colors.purple}/>,
+      leftIcon: () => <MaterialIcons name="email" size={26} color={colors.purple}/>,
       buttonTitle: "CHANGE EMAIL",
       editable:false,
       buttonDisabled:false,
       value: {inputValue: emailValue, setInputValue: setEmailValue},
       keyboardType:"email-address",
-      handleButtonPress: () => {}
+      handleButtonPress: () => {setShowDialogId(2)}
     },
 
     {
       id:"4", 
       title:"Restore", 
       subtitle:"Enter days (Max 30)", 
-      leftIcon: () => <MaterialCommunityIcons name="restore" size={28} color={colors.purple}/>,
+      leftIcon: () => <MaterialCommunityIcons name="restore" size={26} color={colors.purple}/>,
       buttonTitle: "RESTORE",
       editable:true,
       buttonDisabled: restoreValue === "",
       value: {inputValue: restoreValue, setInputValue: setRestoreValue},
       keyboardType:"number-pad",
-      handleButtonPress: () => handleRestorePress()
+      handleButtonPress: () => setShowDialogId(3)
     },
 
     {
       id:"5", 
       title:"Remove", 
       subtitle:"Delete your Account", 
-      leftIcon: () => <Entypo name="trash" size={28} color={colors.purple}/>,
+      leftIcon: () => <Entypo name="trash" size={26} color={colors.purple}/>,
       buttonTitle: "REMOVE",
       editable:false,
       buttonDisabled:false,
       value: {inputValue: "", setInputValue: () => {}},
       keyboardType:"default",
-      handleButtonPress: () => {}
+      handleButtonPress: () => setShowDialogId(4)
     },
   ]
   
@@ -126,13 +174,11 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
       console.log("ERROR IN MY ACCOUNT: ", err);
       setShowRestoreIndicator(false);
     }
-    // onRestorePress();
   }
 
   const handleRemoveAccountPress = async() => {
     try{
       const res = await DatabaseAdapter.removeAccount(currentUser.user_id);
-      console.log(res);
       onLogout(currentUser);
     }catch(err){
       console.log("ERROR while removing account ", err);
@@ -143,6 +189,29 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
     console.log("add Image press");
   }
 
+  const handleDialogSubmitPress = () => {
+    switch (showDialogId) {
+      case 0:
+        console.log("SAVE USERNAME");
+        break;
+      case 1:
+        console.log("CHANGE PHONE NUMBER");
+        break;
+      case 2:
+        console.log("CHANGE EMAIL");
+        break;     
+      case 3:
+        handleRestorePress();
+        break;
+      case 4:
+        console.log("REMOVE ACCOUNT");
+        break;
+
+      default:
+        break;
+    }
+  }
+
   return (
     <View style={styles.container}>
       <BackButtonInApp onPress={() => navigation.navigate("Home")}/>
@@ -150,7 +219,7 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
       <AddCustomerIcon 
         onPress={onAddImagePress}
         containerStyle={{width:130, height:130, marginTop:20}}
-        imageStyle={{width:130, height:130}}/>
+        imageStyle={{width:135, height:135}}/>
 
 
       <FlatList 
@@ -171,20 +240,19 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
         keyExtractor={(item) => item.id}
       />  
 
-      {/* <LoaderButton 
-          title="RESTORE" 
-          showIndicator={showRestoreIndicator}
-          buttonStyle={styles.restoreButton}
-          onPress={handleRestorePress}
-          textStyle={{color:colors.black, fontFamily:"Open-Sans-SemiBold"}}/>
-
-      <LoaderButton 
-          title="REMOVE ACCOUNT" 
-          showIndicator={showAccountIndicator}
-          buttonStyle={[styles.restoreButton, {marginTop:20, backgroundColor:colors.red}]}
-          onPress={handleRemoveAccountPress}
-          textStyle={{color:colors.black, fontFamily:"Open-Sans-SemiBold"}}/> 
-    */}
+    {
+      showDialogId !== -1 
+      &&
+      <AppDialogBox 
+        visibility={showDialogId !== -1}
+        title={dialogBoxData[showDialogId].title}
+        description={dialogBoxData[showDialogId].description}
+        submitButtonTitle= {dialogBoxData[showDialogId].submitButtonTitle}
+        cancelButtonTitle={dialogBoxData[showDialogId].cancelButtonTitle}
+        onCancelPress={() => setShowDialogId(-1)}
+        onSubmitPress={handleDialogSubmitPress}
+        />
+    }
     </View>
   )
 }

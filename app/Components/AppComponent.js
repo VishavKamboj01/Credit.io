@@ -23,7 +23,8 @@ export default function AppComponent({
   const handleSearchIconPress = () => {
     if (isSearchIconPressed) setSearchIconPressed(false);
     else setSearchIconPressed(true);
-    onSearchbarIconPress();
+    if(onSearchbarIconPress)
+      onSearchbarIconPress();
   };
 
   return (
