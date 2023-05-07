@@ -1,17 +1,15 @@
 //import liraries
 import React, {useState} from 'react';
 
-import {Modal, Text, View, TouchableOpacity, StyleSheet} from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import {Modal, View, StyleSheet, ActivityIndicator} from 'react-native';
 import { colors } from '../config/colors';
 import AppText from './AppText';
 import TextButton from './TextButton';
+import AnimatedLottieView from 'lottie-react-native';
 
 // create a component
 const AppDialogBox = ({
     visibility,
-    setDismissAlert,
     title,
     description,
     cancelButtonTitle,
@@ -19,6 +17,20 @@ const AppDialogBox = ({
     onCancelPress,
     onSubmitPress,
 }) => {
+
+    const [showAnimation, setShowAnimation] = useState(false);
+    const [showIndicator, setShowIndicator] = useState(false);
+    const [showAnimations, setShowAnimations] = useState(false);
+
+    const doHandleSubmitPress = () => {
+      setShowAnimations(true);
+      setShowIndicator(true);
+      setTimeout(() => {
+        setShowAnimation(true);
+        setShowIndicator(false);
+      },1200);
+    }
+
     return (
     <View>
       <Modal
@@ -29,27 +41,44 @@ const AppDialogBox = ({
         <View
           style={styles.backgroundContainer}>
           <View
-            style={styles.dialogBoxContainer}>
+            style={[styles.dialogBoxContainer, showAnimation && {justifyContent:"center"}]}>
+            {
+              showAnimations ?
+                <>
+                  {showIndicator && <ActivityIndicator style={{marginTop:10}} color="#7fa2ea" size={65}/>}
+                  {showAnimation && 
+                      <AnimatedLottieView 
+                        onAnimationFinish={onSubmitPress}
+                        style={{width:70, height:70}} 
+                        source={require("../assets/animations/done.json")} 
+                        autoPlay loop={false}/>
+                  }
+                </>
+                
+              :
+                <>
+                  <AppText style={{fontSize:20, fontFamily:"Poppins-SemiBold", color:colors.textColor}} title={title}/>
+                  <AppText style={{textAlign:"center", color:colors.iconColor, marginBottom:40}} title={description}/>
+                  <View style={[styles.buttonsContainer, !cancelButtonTitle && {justifyContent:"center"}]}>
+                      {cancelButtonTitle
+                          &&
+                          <TextButton 
+                          textStyle={{color: colors.purple, fontSize:16}}
+                          title={cancelButtonTitle}
+                          onPress={onCancelPress}/>
+                      }
 
-            <AppText style={{fontSize:20, fontFamily:"Poppins-SemiBold", color:colors.textColor}} title={title}/>
-            <AppText style={{textAlign:"center", color:colors.iconColor, marginBottom:40}} title={description}/>
-            <View style={[styles.buttonsContainer, !cancelButtonTitle && {justifyContent:"center"}]}>
-                {cancelButtonTitle
-                    &&
-                    <TextButton 
-                    textStyle={{color: colors.purple, fontSize:16}}
-                    title={cancelButtonTitle}
-                    onPress={onCancelPress}/>
-                }
+                      <TextButton 
+                          containerStyles={{backgroundColor: colors.purple}} 
+                          softEdges={true} 
+                          textStyle={{color:colors.purple, fontSize:16}}
+                          title={submitButtonTitle ? submitButtonTitle : "OK"}
+                          onPress={doHandleSubmitPress}/>
 
-                <TextButton 
-                    containerStyles={{backgroundColor: colors.purple}} 
-                    softEdges={true} 
-                    textStyle={{color:colors.purple, fontSize:16}}
-                    title={submitButtonTitle ? submitButtonTitle : "OK"}
-                    onPress={onSubmitPress}/>
+                  </View>
+                </>  
 
-            </View>
+            }
           </View>
         </View>
       </Modal>
@@ -69,7 +98,6 @@ const styles = StyleSheet.create({
     dialogBoxContainer:{
         alignItems: 'center',
         backgroundColor: colors.appToolbar,
-        height: 200,
         width: '90%',
         borderWidth: 0.5,
         borderColor:colors.borderColor,
@@ -78,7 +106,8 @@ const styles = StyleSheet.create({
         padding:20,
         paddingTop:20,
         paddingBottom:20,
-        justifyContent:"space-between"
+        justifyContent:"space-between",
+        minHeight:140
     },
 
     buttonsContainer:{

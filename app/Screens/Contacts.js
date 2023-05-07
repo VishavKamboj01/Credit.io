@@ -20,18 +20,23 @@ import { AntDesign } from "@expo/vector-icons";
 
 export default function Contacts({ navigation }) {
   const [contacts, setContacts] = useState([]);
+  const [allContacts, setAllContacts] = useState([]);
+
   const [accessPermission, setAccessPermission] = useState(false);
   const [selectedSearchbarMenuItem, setSelectedSearchbarMenuItem] = useState(1);
   const [searchbarOpen, setSearchbarOpen] = useState();
 
   useEffect(() => {
     getContacts();
+    sortContacts(1);
   }, []);
 
   const getContacts = async () => {
     const status = await requestContactsPermission();
     if (status === "granted") {
       const { data } = await Contact.getContactsAsync();
+
+      setAllContacts(data);
       setContacts(data);
       setAccessPermission(true);
       return;
@@ -64,10 +69,32 @@ export default function Contacts({ navigation }) {
   };
 
   const handleSearchBarMenuItemPress = (id) => {
-    setSelectedSearchbarMenuItem(id);
+    setSelectedSearchbarMenuItem(id.toString());
+    sortContacts(id);
   };
 
-  const handleSearchbarTextChange = (text) => {};
+  const sortContacts = (id) => {
+    let filtered = [...allContacts];
+    filtered.sort((a , b) => {
+      if(a.name < b.name) return -1;
+      return 1;
+    });
+
+    if(id == 2){
+      filtered.reverse();
+    }
+    
+    setContacts(filtered);
+  }
+
+  const handleSearchbarTextChange = (text) => {
+    console.log(text);
+    if(text === "") return sortContacts(1);
+    text = text.toLowerCase();
+
+    const filtered = contacts.filter((contact) => contact.name.toLowerCase().startsWith(text));
+    setContacts(filtered);
+  };
 
   const handleSearchBarIconPress = () => {
     if(searchbarOpen) setSearchbarOpen(false);

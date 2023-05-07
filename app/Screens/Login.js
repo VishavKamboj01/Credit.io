@@ -3,13 +3,10 @@ import {
   StyleSheet,
   ImageBackground,
   View,
-  Image,
-  TextInput,
   Text,
 } from "react-native";
 
 import AppInputField from "../Components/AppInputField";
-import AppButton from "../Components/AppButton";
 import DBAdapter from "../Database/DatabaseAdapter";
 import grid from "../assets/images/grid1.png";
 import { colors } from "../config/colors";
@@ -17,8 +14,6 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import SignupHeader from "../Components/SignupHeader";
 import GradientButton from "../Components/GradientButton";
-import CountryPicker from "../Components/CountryPicker";
-import { countryCodesMenuItems } from "../Components/AppMenus";
 
 const validationSchema = Yup.object().shape({
   phone_number: Yup.string()
@@ -28,14 +23,19 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function Login({ onLogin, navigation }) {  
-  const [currentCode, setCurrentCode] = useState("+91");
 
-  const handleSubmit = (values) => {
-      loginUser(values);
+  const [showLoader, setShowLoader] = useState(false);
+
+  const handleSubmit = async(values) => {
+    if(showLoader) return;
+
+    setShowLoader(true);
+    loginUser(values);
   };
 
   const loginUser = async (values) => {
     const userLoggedIn = await DBAdapter.loginUser(values);
+    setShowLoader(false);
     if (userLoggedIn) onLogin();
     else alert("Invalid Phone Number or Password!");
   };
@@ -80,6 +80,8 @@ export default function Login({ onLogin, navigation }) {
                   title="LOGIN"
                   buttonStyles={{marginTop:30}}
                   onPress={handleSubmit}
+                  isLoader={true}
+                  showIndicator={showLoader}
                 />
               </>
             )}

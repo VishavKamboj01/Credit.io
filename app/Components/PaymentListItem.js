@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { StyleSheet, View, Text, TouchableWithoutFeedback } from "react-native";
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 import { colors } from "../config/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import AppText from "./AppText";
 import { Swipeable } from "react-native-gesture-handler";
 import SwipeablePaymentListItem from "./SwipeablePaymentListItem";
+import { TouchableOpacity } from "react-native";
+
+import Animated, {
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+  Easing,
+  FadeInUp,
+  FadeInDown,
+  SlideInUp
+} from 'react-native-reanimated';
+
 
 export default function PaymentListItem({
   amount,
@@ -15,6 +27,7 @@ export default function PaymentListItem({
   type,
   note,
   children,
+  interest,
   totalDueOrAdvance,
   colorsArrayCredit,
   colorsArrayAccepted,
@@ -23,14 +36,29 @@ export default function PaymentListItem({
   setIsLoaded,
 }) {
 
+
+  const randomWidth = useSharedValue(100);
+  const config = {
+    duration: 500,
+    easing: Easing.bezier(0.5, 0.01, 0, 1),
+  };
+
+
   const [viewWidth, setViewWidth] = useState(0);
+  const [itemPressed, setItemPressed] = useState(false);
 
   const lines = note === null ? 0 : Math.ceil(note.length / 33);
   const height = 70 + ((lines-1)*30);
 
+  const handleItemPressed = () => {
+    if(itemPressed) return setItemPressed(false);
+    setItemPressed(true);
+  }
+
 
   return (
-      <SwipeablePaymentListItem rightActions={rightActions} leftActions={leftActions} type={type}>
+    <SwipeablePaymentListItem rightActions={rightActions} leftActions={leftActions} type={type}>
+      <TouchableWithoutFeedback onPress={handleItemPressed}>
         <View style={lines < 2 ? styles.container : [styles.container,{height:height}]}>
           <View>
             <LinearGradient
@@ -57,21 +85,38 @@ export default function PaymentListItem({
                 <Text style={type === "Accepted" ? [styles.time,{color:colors.black}] : styles.time}>{time}</Text>
                 <Text style={type === "Accepted" ? [styles.date,{color: colors.black}] : styles.date}>{date}</Text>
               </View>
-              <Ionicons
+              <MaterialIcons
                 style={{ marginStart: 5 }}
-                name="checkmark-done-outline"
-                size={18}
+                name="arrow-drop-down"
+                size={25}
                 color={type === "Accepted" ? colors.iconColor : colors.white}
               />
             </LinearGradient>
-            {note && 
-              <AppText title={note} 
-                style={type === "Accepted" ? 
-                    [styles.note, styles.noteLeft,viewWidth && {width:viewWidth}] : 
-                    [styles.note,styles.noteRight,viewWidth && {width:viewWidth}]}/>
+            {itemPressed && 
+              <Animated.View entering={FadeInUp} style={[type !== "Accepted" && styles.interestContainer, viewWidth && {width:viewWidth}]}>
+                <View style={[
+                      styles.note, 
+                      type === "Accepted" ? styles.noteLeft : styles.noteRight,
+                      {flexDirection:"row"},
+                      viewWidth && {width:viewWidth}
+                    ]}>
+                  <View><AppText title={interest}/></View>
+                  <View><AppText title={parseInt(amount) + parseInt(interest)}/></View>
+                </View>
+              {note && 
+                <AppText title={note} 
+                  style={type === "Accepted" ? 
+                      [styles.note, styles.noteLeft,viewWidth && {width:viewWidth}] : 
+                      [styles.note,styles.noteRight,viewWidth && {width:viewWidth}]}/>
+              }
+              </Animated.View>
+              
             }
+          
+            
           </View>
         </View>
+      </TouchableWithoutFeedback>  
       </SwipeablePaymentListItem>
   );
 }
@@ -207,5 +252,13 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderColor:colors.borderColor,
     marginRight:5,
-  }
+  },
+
+  interestContainer:{
+    alignSelf:"flex-end",  
+    alignItems:"flex-end",
+    borderTopLeftRadius:12,
+    borderBottomLeftRadius:12,
+
+  },
 });

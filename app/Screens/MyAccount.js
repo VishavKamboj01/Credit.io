@@ -1,14 +1,11 @@
 import { View, Text, StyleSheet, Button } from 'react-native'
 import React, { useState } from 'react'
 import DatabaseAdapter from '../Database/DatabaseAdapter';
-import { ToastAndroid } from 'react-native';
 import { colors } from '../config/colors';
-import LoaderButton from '../Components/LoaderButton';
 import AddCustomerIcon from '../Components/AddCustomerIcon';
 import { FlatList } from 'react-native-gesture-handler';
 import AccountListItem from '../Components/AccountListItem';
 import {Entypo, FontAwesome, MaterialIcons, MaterialCommunityIcons} from "@expo/vector-icons";
-import { ScrollView } from 'react-native';
 import Utility from '../UtilityFunctions/Utility';
 import BackButtonInApp from '../Components/BackButtonInApp';
 import AppDialogBox from '../Components/AppDialogBox';
@@ -52,7 +49,7 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
     {
       id:"4",
       title: "Restore",
-      description: `All the deleted Customers and Transactions till ${restoreValue} ${restoreValue == 1 ? " day" : " days"} ago will be restored.`,
+      description: `All deleted Customers and Transactions till ${restoreValue} ${restoreValue == 1 ? " day" : " days"} ago will be restored.`,
       cancelButtonTitle: "CANCEL",
       submitButtonTitle: "OK"
     },
@@ -160,19 +157,16 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
       
       date = new Date();
       let today = Utility.getDate(date);
-      
-      setShowRestoreIndicator(true);
-      setTimeout(async() => {
-        await DatabaseAdapter.restoreCustomers(restoreDate, today);
-        await DatabaseAdapter.restorePayments(restoreDate, today); 
-        ToastAndroid.show("Restore Successful!", ToastAndroid.SHORT);
-        setShowRestoreIndicator(false);
-        navigation.navigate("Home",{restore:true});
-      },2000);
+    
+      await DatabaseAdapter.restoreCustomers(restoreDate, today);
+      await DatabaseAdapter.restorePayments(restoreDate, today); 
+  
+      setShowDialogId(-1);
+      navigation.navigate("Home",{restore:true});
       
     }catch(err){
+      setShowDialogId(-1);
       console.log("ERROR IN MY ACCOUNT: ", err);
-      setShowRestoreIndicator(false);
     }
   }
 
@@ -204,6 +198,7 @@ export default function MyAccount({currentUser, onRestorePress, navigation, onLo
         handleRestorePress();
         break;
       case 4:
+        setShowDialogId(-1);
         console.log("REMOVE ACCOUNT");
         break;
 

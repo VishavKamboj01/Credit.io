@@ -87,6 +87,12 @@ function getRandomNumber(till) {
   return Math.round(Math.random() * till);
 }
 
+function getDayDifference(older, newer){
+  let difference = newer.getTime() - older.getTime();
+  let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
+  return TotalDays-1;
+}
+
 
 export default {
   getReadableDate,
@@ -95,4 +101,5 @@ export default {
   jsToSqlDate,
   getDate,
   getRandomNumber,
+  getDayDifference,
 };

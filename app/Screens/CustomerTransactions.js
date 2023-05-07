@@ -29,16 +29,31 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
   const [paymentDeleted, setPaymentDeleted] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
 
+
   useEffect(() => {
     // Get payments for a pertucular customer from the database...
     const getPayments = async() => {
-       const paymentsArray = await DBAdapter.getPayments(customer_id, user_id);
+      const paymentsArray = await DBAdapter.getPayments(customer_id, user_id);
 
       const reversed = paymentsArray.reverse();
-       setPayments(reversed);
-       const dueOrAdvance = getTotalDueOrAdvance(paymentsArray);
-       onRender(dueOrAdvance);
-       setIsLoaded(true);
+      const interestArray = [];
+      
+      for(let payment of reversed){
+        const withInterest = {...payment};
+        payment.payment_date = "2024-05-02";
+        const days = Utility.getDayDifference(new Date(payment.payment_date), new Date());
+        const interest = payment.amount * 2 * 12 / 100 * (1 / 12);
+        
+        withInterest.interest = interest.toFixed(2);
+        interestArray.push(withInterest);
+      }
+
+      setPayments(interestArray);
+      let dueOrAdvance = getTotalDueOrAdvance(paymentsArray);
+      const interest = dueOrAdvance + Math.abs(dueOrAdvance) * 2 * 12 / 100 * (1 / 12);
+      
+      onRender(interest);
+      setIsLoaded(true);
     }
     getPayments();
 
@@ -75,6 +90,7 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
           // start={{x: 0, y: 0.75}} end={{x: 1, y: 0.25}}
           style={{height:6, width:"100%"}}></LinearGradient>
         <FlatList
+          contentContainerStyle={{paddingBottom:20, paddingTop:20}}
           data={payments}
           renderItem={({ item }) => { 
             return (
@@ -84,6 +100,7 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
                 type={item.payment_type}
                 time={Utility.formatTime(item.payment_date_time)}
                 note={item.payment_note}
+                interest={item.interest}
                 totalDueOrAdvance={getTotalDueOrAdvance(payments)}
                 colorsArrayCredit={gradientColorsRed[Utility.getRandomNumber(2)]}
                 colorsArrayAccepted={gradientColorsGreen[Utility.getRandomNumber(2)]}

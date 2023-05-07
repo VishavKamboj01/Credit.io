@@ -104,6 +104,10 @@ function updatePayment(payment){
   return SQlite.updatePayment(payment);
 }
 
+function addInterest(interest){
+  return SQlite.addInterest(interest);
+}
+
 export default {
   addUser,
   createTableUsers,
@@ -128,4 +132,5 @@ export default {
   getPaymentsByDate,
   removeAccount,
   updatePayment,
+  addInterest,
 };

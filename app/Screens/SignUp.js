@@ -26,17 +26,24 @@ export default function SignUp({ navigation, onUserSignUp }) {
   const [isPhoneVerified, setPhoneVerified] = useState(true);
   const [verifiedPhone, setVerifiedPhone] = useState("");
   const [verifiedCountry, setVerifiedCountry] = useState("");
+  const [showLoader, setShowLoader] = useState(false);
 
 
-  const handleFormSubmit = (values) => {
+  const handleFormSubmit = async(values) => {
     //Save Details in the database and login the user
     if(isPhoneVerified){ //Not verified -> Opposite Condition
       setPhoneVerified(false);
       console.log("NOT VERIFIED");
       return;
     } 
+
+    if(showLoader) return;
     
-     addUser(values);
+    setShowLoader(true);  
+    await addUser(values);
+    setShowLoader(false);
+    onUserSignUp(values);
+  
   };
 
   const addUser = async(values) => {
@@ -52,7 +59,6 @@ export default function SignUp({ navigation, onUserSignUp }) {
       values.phone_number = verifiedPhone;
       values.country = verifiedCountry;
       DBAdapter.addUser(values);
-      onUserSignUp(values);
     }catch(error){
       console.log("ERROR IN SIGN UP ", error);
     }
@@ -68,6 +74,7 @@ export default function SignUp({ navigation, onUserSignUp }) {
     setVerifiedPhone(phoneNumber);
     setVerifiedCountry(country);
   }
+
 
   return (
     <ImageBackground source={grid} style={styles.background}>
@@ -112,6 +119,8 @@ export default function SignUp({ navigation, onUserSignUp }) {
                     colorsArray={["#ddffbb","#afc170"]} 
                     title="SIGN UP"
                     onPress={handleSubmit}
+                    isLoader={true}
+                    showIndicator={showLoader}
                   />
 
                 </View>

@@ -25,11 +25,13 @@ export default function AppInputField({
   inputFieldStyle,
   outIcon,
   outIconStyle,
+  inputContainerStyles,
+  iconContainerStyle,
   ...props
 }) {
 
   return (
-    <View style={styles.inputContainer}>
+    <View style={[styles.inputContainer, inputContainerStyles]}>
       <View>
         <Text style={styles.title}>{title}</Text>
         <View style={focused ? 
@@ -45,7 +47,7 @@ export default function AppInputField({
           }
 
           {outIcon && 
-            <View style={styles.outIcon}>
+            <View style={[styles.outIcon, iconContainerStyle]}>
               <Image style={outIconStyle} source={outIcon}/>
             </View>
           }
@@ -101,7 +103,8 @@ const styles = StyleSheet.create({
     left:-15,
     borderRadius:20,
     alignItems:"center",
-    justifyContent:"center"
+    justifyContent:"center",
+    zIndex:1
   },
 
   title:{
@@ -117,7 +120,8 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily:"Open-Sans-Medium",
     letterSpacing:0.4,
-    borderRadius:13
+    borderRadius:13,
+    paddingRight:10
   },
   multilineInputField: {
     width: "85%",

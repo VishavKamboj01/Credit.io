@@ -166,7 +166,6 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
       onToolbarMenuItemPress={handleToolbarMenuItemPress}
     >
       <View style={styles.container}>
-        {currentUser && <Text>{currentUser.user_name}</Text>}
         {customers.length !== 0 ? (
           <AppList
             items={customers}
@@ -176,13 +175,11 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
             isSwipeable={true}
           />
         ) : (
-          <View
-            style={{ alignItems: "center", flex: 1, justifyContent: "center" }}
-          >
-            <Text style={{ color: colors.lightBlack }}>
+          <View style={styles.textContainer}>
+            <Text style={{ color: colors.lightWhite }}>
               Customers will show here.
             </Text>
-          </View>
+        </View>
         )}
       </View>
     </AppComponent>
@@ -194,9 +191,16 @@ const styles = StyleSheet.create({
     backgroundColor:colors.appBackground,
     width:"100%",
     heigth:"100%",
+    paddingTop:20
   },
 
-  toolbar: {
-    backgroundColor: colors.red,
-  },
+  textContainer: {
+    width:"100%",
+    height:"100%",
+    alignItems: "center", 
+    justifyContent: "center",
+    backgroundColor:colors.appBackground,
+    paddingBottom:"20%"
+  }
+
 });

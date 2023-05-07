@@ -10,8 +10,6 @@ import AuthNavigator from "./app/Navigation/AuthNavigator";
 import DBAdapter from "./app/Database/DatabaseAdapter";
 
 import * as Font from "expo-font";
-import Payment from "./app/Screens/Payment";
-import customer from "./app/assets/customerImage.png";
 
 const openSansFonts = {
   "Open-Sans-Medium" : require("./app/assets/fonts/OpenSans/OpenSans-Medium.ttf"),
@@ -92,6 +90,7 @@ export default function App() {
             <StatusBar style="auto" />
           </NavigationContainer>
       </MenuProvider>
+      
     );
   }
 

@@ -10,6 +10,7 @@ import BackButtonInApp from "../Components/BackButtonInApp";
 import name from "../assets/images/name.png";
 import phone from "../assets/images/phone.png";
 import location from "../assets/images/location.png";
+import interest from "../assets/images/interest_rate.png";
 
 
 import AddCustomerIcon from "../Components/AddCustomerIcon";
@@ -19,6 +20,7 @@ export default function AddCustomer({ navigation, route, currentUser, additional
   const [fullName, setFullName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
+  const [interestRate, setInterestRate] = useState();
 
   const [id, setId] = useState(17);
 
@@ -92,10 +94,20 @@ export default function AddCustomer({ navigation, route, currentUser, additional
       image_uri: imageUri,
     };
 
-
     const addCustomer = async () => {
       const result = await DBAdapter.createCustomer(currentUser, customer);
-      console.log("RESULT ",result);
+      
+      if(result.customerAdded){
+        const interest = {
+          customer_id : result.success.insertId,
+          interestable_amount: 0,
+          interest_rate: interestRate
+        }
+
+        const res = await DBAdapter.addInterest(interest);
+        if(res.interestAdded) console.log("INTEREST ADDED");
+      }
+
       navigation.navigate({
         name: "Home",
         params: { customer: customer },
@@ -110,6 +122,7 @@ export default function AddCustomer({ navigation, route, currentUser, additional
     setAddress("");
     setPhoneNumber("");
     setImageUri("");
+    setInterestRate("");
   };
 
   const handleUpdateCustomerPress = async() => {
@@ -141,17 +154,43 @@ export default function AddCustomer({ navigation, route, currentUser, additional
           outIconStyle={{width:39, height:39}}
         />
 
+      <View style={{flexDirection:"row", width:"90%"}}>
+          <AppInputField
+            inputContainerStyles={{width:"60%"}}
+            inputFieldStyle={{
+                backgroundColor:colors.appToolbar,
+                
+              }}
+            placeholder="Phone Number"
+            value={phoneNumber}
+            onChangeText={(text) => setPhoneNumber(text)}
+            keyboardType="number-pad"
+            outIcon={phone}
+            outIconStyle={{width:33, height:33}}
+          />
+          <AppInputField
+            inputContainerStyles={{width:"40%"}}
+            inputFieldStyle={{backgroundColor:colors.appToolbar}}
+            placeholder="Interest Rate"
+            value={interestRate}
+            onChangeText={(text) => setInterestRate(text)}
+            keyboardType="number-pad"
+            outIcon={interest}
+            iconContainerStyle={{
+              backgroundColor:colors.purple,
+              borderRadius:17,
+              alignItems:"center",
+              justifyContent:"center"
+            }}
+            outIconStyle={{
+              width:25, 
+              height:25,
+            }}
+          />
+      </View>
+
         <AppInputField
-          inputFieldStyle={{backgroundColor:colors.appToolbar,marginLeft:0}}
-          placeholder="Phone Number"
-          value={phoneNumber}
-          onChangeText={(text) => setPhoneNumber(text)}
-          keyboardType="number-pad"
-          outIcon={phone}
-          outIconStyle={{width:33, height:33}}
-        />
-        <AppInputField
-          inputFieldStyle={{backgroundColor:colors.appToolbar, marginLeft:0}}
+          inputFieldStyle={{backgroundColor:colors.appToolbar}}
           placeholder="Address"
           value={address}
           numberOfLines={4}

@@ -42,10 +42,11 @@ function createDatabaseSchema() {
   // dropTable("users");
   // dropTable("payments");
   // dropTable("customers");
+  // dropTable("interest");
   createTableUsers();
   createTableCustomers();
   createTablePayments();
-  // createTableRecentPayments();
+  createTableInterest();
 }
 
 function createTableUsers() {
@@ -93,6 +94,45 @@ function createTableCustomers() {
       (txObj, resultSet) => console.log("success in creating customers table"),
       () => console.log("error in creating customers table")
     );
+  });
+}
+
+function createTableInterest() {
+  db.transaction((tx) => {
+    tx.executeSql(
+      `
+      CREATE TABLE IF NOT EXISTS interest
+      (
+        interest_id   INTEGER PRIMARY KEY AUTOINCREMENT,
+        customer_id 	    INTEGER NOT NULL,
+        interestable_amount DECIMAL(9,2)   NOT NULL,
+        interest_rate       INTEGER   NOT NULL,
+        deleted       VARCHAR(5)   DEFAULT "no",
+        deleted_date  TEXT,
+        deleted_date_time  TEXT,
+        CONSTRAINT fk_customers1
+          FOREIGN KEY (customer_id)
+          REFERENCES customers (customer_id)
+      );`,
+      null,
+      (txObj, resultSet) => console.log("success in creating interest table"),
+      () => console.log("error in creating interest table")
+    );
+  });
+}
+
+function addInterest({customer_id, interestable_amount, interest_rate}){
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `INSERT INTO interest (customer_id, interestable_amount, interest_rate)
+         VALUES (?,?,?)`,
+         [customer_id, interestable_amount, interest_rate],
+         (txObj, success) =>
+              resolve({ interestAdded: true, success: success }),
+         (txObj, error) => reject(error)
+      )
+    });
   });
 }
 
@@ -546,4 +586,5 @@ export default {
   getPaymentsByDate,
   removeAccount,
   updatePayment,
+  addInterest,
 };
