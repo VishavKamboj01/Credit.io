@@ -86,10 +86,17 @@ export default function AddCustomer({ navigation, route, currentUser, additional
     }
   };
 
+  const addCountryCodeWithNumber = () => {
+    if(phoneNumber.charAt(0) !== '+') 
+      return "+91 "+phoneNumber.trim();
+
+    return "+91 "+phoneNumber.substring(3).trim();
+  }
+
   const handleAddCustomerPress = () => {
     const customer = {
       full_name: fullName,
-      phone_number: phoneNumber,
+      phone_number: addCountryCodeWithNumber(),
       address: address,
       image_uri: imageUri,
     };
@@ -100,6 +107,7 @@ export default function AddCustomer({ navigation, route, currentUser, additional
       if(result.customerAdded){
         const interest = {
           customer_id : result.success.insertId,
+          user_id: currentUser.user_id,
           interestable_amount: 0,
           interest_rate: interestRate
         }
@@ -128,7 +136,7 @@ export default function AddCustomer({ navigation, route, currentUser, additional
   const handleUpdateCustomerPress = async() => {
     const arg = {
       full_name: fullName,
-      phone_number: phoneNumber,
+      phone_number: addCountryCodeWithNumber(),
       address : address,
       image_uri : imageUri,
       customer_id: route.params.editCustomer.customer_id

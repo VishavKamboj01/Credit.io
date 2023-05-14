@@ -33,13 +33,13 @@ export default function App() {
 
         DBAdapter.createDatabaseSchema();
         const users = await DBAdapter.getAllUsers();
-        console.log("USERS  :  ",users);
+        // console.log("USERS  :  ",users);
         let currentUser = undefined;
         for(let user of users)
           if(user.status === "Logged In")
             currentUser = user;
 
-        console.log("CURRENT USER ",currentUser);
+        // console.log("CURRENT USER ",currentUser);
         if (currentUser !== undefined) {
           setCurrentUser(currentUser);
         }
@@ -61,7 +61,7 @@ export default function App() {
     if(loginStatus) setLoginStatus(false);
     else setLoginStatus(true);
 
-    console.log("In app.js " + JSON.stringify(currentUser));
+    // console.log("In app.js " + JSON.stringify(currentUser));
   };
 
   const handleLogout = (currentUser) => {

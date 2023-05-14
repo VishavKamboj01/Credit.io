@@ -1,22 +1,51 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from "react-native";
 import { Feather, AntDesign } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import * as Linking from "expo-linking"
 
 import { colors } from "../config/colors";
 import AppText from "./AppText";
+import Utility from "../UtilityFunctions/Utility";
 
 export default function PaymentRemote({
   onAcceptPaymentPress,
   onGiveCreditPress,
   onCallIconPress,
   onMessageIconPress,
+  phoneNumber,
+  due
 }) {
   //["#948cb7","#c7a8ca"]
+
+  const handlePhonePress = () => {
+    if(!phoneNumber) return;
+    makeIntent("tel:"+phoneNumber, "Calling Failed!");
+  }
+
+  const handleMessagePress = () => {
+    const message = `You have ${due} due as of ${Utility.getReadableDate(new Date())}. Please consider paying it as soon as possible.`;
+
+    let url =
+    'whatsapp://send?text=' + message + '&phone=' + phoneNumber;
+
+    makeIntent(url, "Messaging Failed!");
+  }
+
+  const makeIntent = async (url, errorMessage) => {
+    try{
+       Linking.openURL(url);
+      // console.log(result);
+    }catch(err){
+      ToastAndroid.show(errorMessage, ToastAndroid.LONG);
+      console.log(err);
+    } 
+    
+  }
+
   return (
-      <LinearGradient
-        colors={["#434343","rgba(0,0,0,0.8)"]} 
-        start={{x: 0, y: 0.75}} end={{x: 1, y: 0.25}}
+      <View
+        // colors={["#434343","rgba(0,0,0,0.8)"]} 
+        // start={{x: 0, y: 0.75}} end={{x: 1, y: 0.25}}
         style={styles.bottomContainer}>
         <View style={styles.buttonsContainer}>
           <TouchableOpacity onPress={onAcceptPaymentPress}>
@@ -47,14 +76,14 @@ export default function PaymentRemote({
           </TouchableOpacity>
         </View>
         <View style={styles.secondButtonsContainer}>
-          <View style={styles.callButton}>
+          <TouchableOpacity style={styles.callButton} onPress={handlePhonePress}>
             <Feather name="phone-call" size={24} color={colors.black} />
-          </View>
-          <View style={styles.messageButton}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.messageButton} onPress={handleMessagePress}>
             <AntDesign name="message1" size={24} color={colors.black} />
-          </View>
+          </TouchableOpacity>
         </View>
-      </LinearGradient>
+      </View>
    
   );
 }
@@ -62,7 +91,7 @@ export default function PaymentRemote({
 const styles = StyleSheet.create({
   bottomContainer: {
     width: "90%",
-    backgroundColor: colors.white,
+    backgroundColor: colors.appToolbar,
     borderRadius: 30,
     alignItems: "center",
     alignSelf: "center",
@@ -70,6 +99,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     bottom:10,
     marginTop: 10,
+    borderWidth:1,
+    borderColor:colors.borderColor
   },
 
   buttonsContainer: {

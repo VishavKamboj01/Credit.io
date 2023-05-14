@@ -82,6 +82,7 @@ export default function Home({ navigation, route, currentUser, onLogout, payment
       user_id: currentUser.user_id,
       customer_id: item.customer_id,
       name: item.full_name,
+      phone_number:item.phone_number,
       image: item.image_uri,
       color,
     });

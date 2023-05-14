@@ -108,6 +108,19 @@ function addInterest(interest){
   return SQlite.addInterest(interest);
 }
 
+function getAllInterest(user_id){
+  return SQlite.getAllInterest(user_id);
+}
+
+function updateInterest(interest){
+  return SQlite.updateInterest(interest);
+}
+
+function getInterest(customer_id){
+  return SQlite.getInterest(customer_id);
+}
+
+
 export default {
   addUser,
   createTableUsers,
@@ -133,4 +146,7 @@ export default {
   removeAccount,
   updatePayment,
   addInterest,
+  getAllInterest,
+  updateInterest,
+  getInterest,
 };

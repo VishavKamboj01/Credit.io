@@ -36,7 +36,6 @@ export default function PaymentListItem({
   setIsLoaded,
 }) {
 
-
   const randomWidth = useSharedValue(100);
   const config = {
     duration: 500,
@@ -92,17 +91,18 @@ export default function PaymentListItem({
                 color={type === "Accepted" ? colors.iconColor : colors.white}
               />
             </LinearGradient>
-            {itemPressed && 
+            {(itemPressed) && 
               <Animated.View entering={FadeInUp} style={[type !== "Accepted" && styles.interestContainer, viewWidth && {width:viewWidth}]}>
-                <View style={[
+                {type === "Credit" && <View style={[
                       styles.note, 
                       type === "Accepted" ? styles.noteLeft : styles.noteRight,
                       {flexDirection:"row"},
                       viewWidth && {width:viewWidth}
                     ]}>
-                  <View><AppText title={interest}/></View>
-                  <View><AppText title={parseInt(amount) + parseInt(interest)}/></View>
-                </View>
+                  {/* <View><AppText title={interest}/></View> */}
+
+                  <View><AppText title={(interest === undefined ? "Interest " + 0 :"Interest " + parseInt(interest))}/></View>
+                </View>}
               {note && 
                 <AppText title={note} 
                   style={type === "Accepted" ? 

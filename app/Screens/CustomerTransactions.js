@@ -28,6 +28,7 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
   const {customer_id, user_id} = route.params;
   const [paymentDeleted, setPaymentDeleted] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [dueOrAdvance, setDueOrAdvance] = useState("0"); 
 
 
   useEffect(() => {
@@ -36,28 +37,47 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
       const paymentsArray = await DBAdapter.getPayments(customer_id, user_id);
 
       const reversed = paymentsArray.reverse();
-      const interestArray = [];
-      
-      for(let payment of reversed){
-        const withInterest = {...payment};
-        payment.payment_date = "2024-05-02";
-        const days = Utility.getDayDifference(new Date(payment.payment_date), new Date());
-        const interest = payment.amount * 2 * 12 / 100 * (1 / 12);
-        
-        withInterest.interest = interest.toFixed(2);
-        interestArray.push(withInterest);
-      }
 
-      setPayments(interestArray);
-      let dueOrAdvance = getTotalDueOrAdvance(paymentsArray);
-      const interest = dueOrAdvance + Math.abs(dueOrAdvance) * 2 * 12 / 100 * (1 / 12);
+      setPayments(reversed);
+
+      const result = await getInterest(customer_id);
+      const today = Utility.getDate(new Date());
+
+      const {interestable_amount, interest_updated_date, interest_rate} = result[0];
+
+      const days = Utility.getDayDifference(new Date(today), new Date(interest_updated_date))+1;
       
-      onRender(interest);
+      let dueOrAdvance = getTotalDueOrAdvance(paymentsArray);
+      setDueOrAdvance(dueOrAdvance);
+      let interest = 0;
+      if(days > 0){
+        console.log("HERE");
+        interest = calculateInterest(interestable_amount, days, interest_rate);
+        if(interest_updated_date !== null && interest_updated_date !== today){
+          await DBAdapter.updateInterest({customer_id, 
+            interestable_amount: parseInt(interest),
+            interest_updated_date: today});
+        }       
+        console.log("Interest "+interest);   
+      }
+      
+      const res = await DBAdapter.getAllInterest(user_id);
+        
+
+      onRender(dueOrAdvance);
       setIsLoaded(true);
     }
     getPayments();
 
   }, [route, additional.route.params, paymentDeleted]); 
+
+  const getInterest = async(customer_id) => {
+    return await DBAdapter.getInterest(customer_id);
+  }
+
+  const calculateInterest = (interestable_amount, days, interest_rate) => {
+    return interestable_amount  * days * parseInt(interest_rate) / 100 * (1 / 365);
+  }
 
   const handleAcceptPaymentPress = () => {
     navigation.navigate("Payment",{trigger:"Accepted", customer_id, user_id});
@@ -127,6 +147,8 @@ export default function CustomerTransactions({ onRender, route, navigation, addi
         <PaymentRemote
           onAcceptPaymentPress={handleAcceptPaymentPress}
           onGiveCreditPress={handleGiveCreditPress}
+          phoneNumber={route.params.phone_number}
+          due={dueOrAdvance}
           />
         </> 
         :

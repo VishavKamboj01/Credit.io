@@ -87,7 +87,7 @@ function getRandomNumber(till) {
   return Math.round(Math.random() * till);
 }
 
-function getDayDifference(older, newer){
+function getDayDifference(newer, older){
   let difference = newer.getTime() - older.getTime();
   let TotalDays = Math.ceil(difference / (1000 * 3600 * 24));
   return TotalDays-1;

@@ -97,23 +97,65 @@ const Payment = ({name, image, navigation, additional, color}) => {
         }
 
         addPayment(paymentInfo, trigger, customer_id, user_id);
-        navigation.navigate("CustomerTransactions", {paymentAdded:true});
+        navigation.navigate("CustomerTransactions", {paymentAdded:true, payment_date: Utility.getDate(paymentInfo.date)});
     }
+
+    /*
+        Rate 12 yearly
+        interestable_amount = 10000, 15000
+        1 credit -> 10000, 1-1-23 
+        2 credit -> 5000, 1-2-23
+        3 accepted -> 5000, 1-3-23
+
+            1. 10000 2 months 200
+            2. 5000 1 month 50
+
+        interestable_amount = 15000 - 5000 = 10000 + 250 = 10250
+        
+        4 accepted -> 3000, 1-4-23
+        interestable_amount = 10250 - 3000 = 7250
+
+        5 credit -> 5000, 1-5-23
+        interestable_amount = 7250 + 5000 = 12250
+
+        6 credit -> 4000, 1-5-23
+        interestable_amount = 12250 + 4000 = 16250
+
+        7 accepted -> 10000, 1-6-23
+
+            5. 5000 1 month 50
+            6. 4000 1 month 40
+
+        interestable_amount = 16250 - 10000 = 6250 + 90 = 6340    
+    
+    */
 
     const addPayment = async(paymentInfo, trigger, customer_id, user_id) => {
         const payment = {
-        amount: paymentInfo.amount,
-        payment_date_time: paymentInfo.date,
-        payment_date: Utility.getDate(paymentInfo.date),
-        payment_type: trigger,
-        payment_note: note,
-        customer_id,
-        user_id
+            amount: paymentInfo.amount,
+            payment_date_time: paymentInfo.date,
+            payment_date: Utility.getDate(paymentInfo.date),
+            payment_type: trigger,
+            payment_note: note,
+            customer_id,
+            user_id
         };
 
         try{
-        const result = await DatabaseAdapter.addPayment(payment);
-        ToastAndroid.show("Success!", ToastAndroid.LONG);
+            await DatabaseAdapter.addPayment(payment);
+            ToastAndroid.show("Success!", ToastAndroid.LONG);
+
+            const interest = {
+                customer_id,
+                interestable_amount: paymentInfo.amount,
+                interest_updated_date: Utility.getDate(paymentInfo.date)
+            };
+
+            if(trigger !== "Credit")
+                interest.interestable_amount = -paymentInfo.amount
+            
+            await DatabaseAdapter.updateInterest(interest);
+
         }catch(err){
             console.log("ERROR in Payment", err);
             ToastAndroid.show("Failed!", ToastAndroid.LONG);

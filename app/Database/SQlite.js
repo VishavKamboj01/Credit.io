@@ -105,8 +105,10 @@ function createTableInterest() {
       (
         interest_id   INTEGER PRIMARY KEY AUTOINCREMENT,
         customer_id 	    INTEGER NOT NULL,
+        user_id        INTEGER NOT NULL,
         interestable_amount DECIMAL(9,2)   NOT NULL,
         interest_rate       INTEGER   NOT NULL,
+        interest_updated_date TEXT,
         deleted       VARCHAR(5)   DEFAULT "no",
         deleted_date  TEXT,
         deleted_date_time  TEXT,
@@ -121,13 +123,56 @@ function createTableInterest() {
   });
 }
 
-function addInterest({customer_id, interestable_amount, interest_rate}){
+function updateInterest({customer_id, interestable_amount, interest_updated_date}){
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        `INSERT INTO interest (customer_id, interestable_amount, interest_rate)
-         VALUES (?,?,?)`,
-         [customer_id, interestable_amount, interest_rate],
+        `UPDATE interest SET interestable_amount = interestable_amount+?, interest_updated_date=?
+          WHERE customer_id=?`,
+         [interestable_amount, interest_updated_date, customer_id],
+         (txObj, success) =>
+              resolve({ interestAdded: true, success: success }),
+         (txObj, error) => reject(error)
+      )
+    });
+  });
+}
+
+function getAllInterest(user_id){
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `SELECT * FROM interest WHERE user_id = ?`,
+         [user_id],
+         (txObj, success) =>
+              resolve(success.rows._array),
+         (txObj, error) => reject(error)
+      )
+    });
+  });
+}
+
+function getInterest(customer_id){
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `SELECT * FROM interest WHERE customer_id = ?`,
+         [customer_id],
+         (txObj, success) =>
+              resolve(success.rows._array),
+         (txObj, error) => reject(error)
+      )
+    });
+  });
+}
+
+function addInterest({customer_id, user_id, interestable_amount, interest_rate}){
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        `INSERT INTO interest (customer_id, user_id, interestable_amount, interest_rate)
+         VALUES (?,?,?,?)`,
+         [customer_id,user_id, interestable_amount, interest_rate],
          (txObj, success) =>
               resolve({ interestAdded: true, success: success }),
          (txObj, error) => reject(error)
@@ -587,4 +632,7 @@ export default {
   removeAccount,
   updatePayment,
   addInterest,
+  getAllInterest,
+  updateInterest,
+  getInterest,
 };
