@@ -3,7 +3,6 @@ import {
   StyleSheet,
   ImageBackground,
   View,
-  Text,
 } from "react-native";
 
 import AppInputField from "../Components/AppInputField";
@@ -74,7 +73,7 @@ export default function Login({ onLogin, navigation }) {
                   error={errors.password}
                   title="Password"
                 />
-                <Text style={styles.forgetPassword}>Forget Password?</Text>
+                {/* <Text style={styles.forgetPassword}>Forget Password?</Text> */}
                 <GradientButton 
                   colorsArray={["#ddffbb","#afc170"]} 
                   title="LOGIN"
